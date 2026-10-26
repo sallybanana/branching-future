@@ -1,0 +1,1834 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+</head>
+<body>
+<title>Branching Futures</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap">
+<style>
+/* Layout: a dark observatory masthead where storylines grow across the screen, a sticky six-step bar, then one working surface per step; the network reads left→right as time. */
+:root {
+  --bg: #f2f5f4;
+  --surface: #ffffff;
+  --surface-2: #e7eeec;
+  --ink: #0f201f;
+  --muted: #5a6c6a;
+  --line: #d4dddb;
+  --accent: #0d5d62;
+  --accent-ink: #ffffff;
+  --accent-soft: #d8ebe9;
+  --mark: #c27818;
+  --danger: #b03f3f;
+  --ok: #217757;
+  --band: #0b2326;
+  --band-2: #123338;
+  --band-ink: #eaf2f0;
+  --band-muted: #9db7b3;
+  --amber: #e7a744;
+  --shadow: 0 1px 2px rgba(15, 32, 31, 0.05), 0 10px 28px -16px rgba(15, 32, 31, 0.22);
+  --agent-s: 52%;
+  --agent-l: 42%;
+  --f-display: "Instrument Serif", "Iowan Old Style", Georgia, serif;
+  --f-read: "Newsreader", "Iowan Old Style", Georgia, serif;
+  --f-body: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --r: 8px;
+  --r-lg: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #091315; --surface: #0f1d20; --surface-2: #15282c; --ink: #e3eeec; --muted: #93aaa6;
+    --line: #213639; --accent: #6cc6c1; --accent-ink: #071315; --accent-soft: #143338; --mark: #e8ab4c; --danger: #e78080; --ok: #6fd2a6;
+    --band: #061316; --band-2: #0c2428; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -16px rgba(0, 0, 0, 0.7);
+    --agent-s: 60%; --agent-l: 64%; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #091315; --surface: #0f1d20; --surface-2: #15282c; --ink: #e3eeec; --muted: #93aaa6;
+  --line: #213639; --accent: #6cc6c1; --accent-ink: #071315; --accent-soft: #143338; --mark: #e8ab4c; --danger: #e78080; --ok: #6fd2a6;
+  --band: #061316; --band-2: #0c2428; --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 10px 28px -16px rgba(0, 0, 0, 0.7);
+  --agent-s: 60%; --agent-l: 64%; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { background: var(--bg); color: var(--ink); }
+body { margin: 0; font-family: var(--f-body); font-size: 14.5px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 30; background: var(--band); }
+.wrap { max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 72px; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 400; text-wrap: balance; margin: 0; letter-spacing: -0.005em; }
+h2 { font-size: clamp(1.7rem, 3vw, 2.2rem); line-height: 1.1; }
+h3 { font-size: 1.35rem; line-height: 1.2; }
+.eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 12.5px; }
+button { font: inherit; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+
+/* Masthead */
+.mast { position: relative; overflow: hidden; background: radial-gradient(120% 140% at 85% 0%, var(--band-2) 0%, var(--band) 60%); color: var(--band-ink); }
+.mast canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.mast::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--band) 0%, transparent 45%, transparent 70%, var(--band) 100%); opacity: 0.55; pointer-events: none; }
+.mast-inner { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 30px; }
+.mast-top { display: flex; flex-wrap: wrap; gap: 10px 20px; align-items: center; justify-content: space-between; }
+.mast .eyebrow { color: var(--band-muted); }
+.mast-main { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.9fr); gap: 28px 40px; align-items: end; margin-top: 30px; }
+@media (max-width: 900px) { .mast-main { grid-template-columns: 1fr; margin-top: 22px; } }
+.mast h1 { font-size: clamp(3rem, 8vw, 6rem); line-height: 0.92; letter-spacing: -0.02em; color: var(--band-ink); }
+.mast h1 em { font-style: italic; color: var(--amber); }
+.mast .brand p { margin: 16px 0 0; color: var(--band-muted); max-width: 54ch; font-size: 15px; }
+.mast .btn { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.16); color: var(--band-ink); }
+.mast .btn:hover:not(:disabled) { border-color: var(--amber); background: rgba(255, 255, 255, 0.1); }
+.save-state { font-size: 12px; color: var(--band-muted); display: inline-flex; align-items: center; gap: 6px; margin-right: 4px; }
+.save-state::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--band-muted); }
+.save-state.cloud::before { background: #5fd49f; box-shadow: 0 0 0 3px rgba(95, 212, 159, 0.18); }
+.save-state.err::before { background: #ef8a8a; }
+.now { border: 1px solid rgba(255, 255, 255, 0.14); background: rgba(6, 19, 22, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border-radius: var(--r-lg); padding: 16px 18px; min-width: 0; }
+.now .k { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); }
+.now .t { font-family: var(--f-display); font-size: 1.6rem; line-height: 1.1; margin-top: 4px; }
+.now .q { color: var(--band-muted); font-size: 13.5px; margin-top: 6px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.now .figs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.now .figs div { border-top: 1px solid rgba(255, 255, 255, 0.14); padding-top: 6px; }
+.now .figs b { display: block; font-family: var(--f-mono); font-weight: 500; font-size: 20px; font-variant-numeric: tabular-nums; color: var(--band-ink); }
+.now .figs span { font-size: 11.5px; color: var(--band-muted); }
+.now .prog { display: flex; gap: 3px; margin-top: 14px; }
+.now .prog i { flex: 1; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.14); }
+.now .prog i.on { background: var(--amber); }
+
+/* Step bar */
+nav.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 15; display: flex; gap: 4px; margin: 0 calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 10px max(16px, env(safe-area-inset-left, 0px)); overflow-x: auto; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); scrollbar-width: none; }
+nav.tabs::-webkit-scrollbar { display: none; }
+nav.tabs button { background: none; border: 1px solid transparent; border-radius: 99px; padding: 6px 13px 6px 7px; color: var(--muted); font-weight: 500; white-space: nowrap; display: inline-flex; gap: 8px; align-items: center; transition: background 0.15s, color 0.15s; }
+nav.tabs button:hover { color: var(--ink); background: var(--surface-2); }
+nav.tabs button .n { font-family: var(--f-mono); font-size: 11px; width: 22px; height: 22px; border-radius: 50%; border: 1px solid var(--line); display: inline-grid; place-items: center; background: var(--surface); }
+nav.tabs button.done .n { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+nav.tabs button[aria-selected="true"] { color: var(--accent-ink); background: var(--accent); }
+nav.tabs button[aria-selected="true"] .n { background: transparent; border-color: currentColor; color: currentColor; }
+nav.tabs .count { font-family: var(--f-mono); font-size: 11px; opacity: 0.75; }
+
+.btn { border: 1px solid var(--line); background: var(--surface); color: var(--ink); padding: 8px 15px; border-radius: 99px; font-weight: 600; font-size: 13.5px; transition: border-color 0.15s, background 0.15s, transform 0.1s; }
+.btn:hover:not(:disabled) { border-color: var(--accent); }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); box-shadow: 0 6px 16px -8px var(--accent); }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+.btn.danger { color: var(--danger); }
+.btn.danger.armed { background: var(--danger); color: var(--surface); border-color: var(--danger); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+.btn.sm { padding: 5px 11px; font-size: 12.5px; }
+.linkish { background: none; border: 0; padding: 0; color: var(--accent); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+.banner { margin-top: 18px; padding: 12px 16px; border: 1px solid var(--line); border-left: 3px solid var(--mark); border-radius: var(--r); background: var(--surface); color: var(--muted); display: grid; gap: 4px; }
+.banner strong { color: var(--ink); font-weight: 600; }
+.note { padding: 11px 14px; border-radius: var(--r); background: var(--surface-2); font-size: 13px; color: var(--muted); }
+.note strong { color: var(--ink); }
+.panel { margin-top: 28px; animation: rise 0.35s ease both; }
+@keyframes rise { from { opacity: 0.4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .panel { animation: none; } }
+.section-head { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: end; justify-content: space-between; margin-bottom: 18px; }
+.section-head p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; font-size: 14px; }
+.next-bar { margin-top: 28px; padding: 14px 18px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+
+/* Exercises drawer */
+.drawer { margin-top: 16px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 14px 18px; box-shadow: var(--shadow); }
+.drawer .rowx { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.drawer .rowx:last-child { border-bottom: 0; }
+.drawer .rowx b { font-family: var(--f-display); font-weight: 400; font-size: 1.2rem; }
+.drawer .rowx.current b { color: var(--accent); }
+
+/* Forms */
+.field { display: grid; gap: 5px; }
+.field label { font-weight: 600; font-size: 13px; }
+.field .hint { font-size: 12px; color: var(--muted); }
+.fields { display: grid; gap: 16px; }
+.row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+input[type="text"], input[type="number"], input[type="search"], textarea, select { font: inherit; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 8px 11px; width: 100%; min-width: 0; transition: border-color 0.15s, box-shadow 0.15s; }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+textarea { resize: vertical; line-height: 1.55; }
+textarea.story { font-family: var(--f-read); font-size: 16px; line-height: 1.6; }
+input:disabled, textarea:disabled, select:disabled { opacity: 0.6; }
+.topic-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 32px; }
+@media (max-width: 920px) { .topic-grid { grid-template-columns: 1fr; } }
+.presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 10px; }
+.preset { position: relative; text-align: left; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-lg); padding: 14px 14px 12px; overflow: hidden; color: var(--ink); transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s; }
+.preset::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; background: var(--accent); opacity: 0.8; }
+.preset:last-child::before { background: var(--mark); }
+.preset:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); }
+.preset b { display: block; font-family: var(--f-display); font-weight: 400; font-size: 1.3rem; line-height: 1.15; }
+.preset span { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); }
+.brief-box { border: 1px dashed var(--accent); background: var(--accent-soft); border-radius: var(--r-lg); padding: 16px; display: grid; gap: 10px; }
+.brief-box textarea { background: var(--surface); }
+.design-box { position: sticky; top: 76px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-lg); padding: 20px; display: grid; gap: 18px; align-content: start; box-shadow: var(--shadow); align-self: start; }
+@media (max-width: 920px) { .design-box { position: static; } }
+.slider { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; align-items: center; }
+.slider label { font-weight: 600; font-size: 13px; }
+.slider output { font-family: var(--f-display); font-size: 2.4rem; line-height: 1; grid-row: span 2; min-width: 2ch; text-align: right; color: var(--accent); }
+.slider input { width: 100%; accent-color: var(--accent); }
+.radio-list { display: grid; gap: 6px; }
+.radio-list label { display: flex; gap: 9px; align-items: start; font-size: 13px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--r); cursor: pointer; }
+.radio-list label:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.radio-list input { accent-color: var(--accent); margin-top: 3px; }
+.radio-list label span { color: var(--muted); display: block; }
+.check { display: flex; gap: 9px; align-items: start; font-size: 13px; }
+.check input { accent-color: var(--accent); margin-top: 3px; }
+.lock-note { padding: 11px 14px; border-radius: var(--r); background: var(--surface-2); display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; justify-content: space-between; font-size: 13px; }
+
+/* Experts */
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 16px 0 14px; }
+.filters input[type="search"] { max-width: 280px; border-radius: 99px; padding-left: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 99px; padding: 4px 12px; font-size: 12.5px; font-weight: 500; color: var(--ink); }
+.chip:hover { border-color: var(--accent); }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+.chip[aria-pressed="true"] .c { color: inherit; opacity: 0.7; }
+.chip .c { font-family: var(--f-mono); font-size: 11px; color: var(--muted); }
+.expert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.expert { position: relative; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 14px 16px; display: grid; gap: 7px; align-content: start; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
+.expert:hover:not(.locked) { transform: translateY(-1px); box-shadow: var(--shadow); }
+.expert.on { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent), var(--shadow); background: linear-gradient(180deg, var(--accent-soft), var(--surface) 70%); }
+.expert.locked { cursor: default; }
+.expert .hd { display: flex; gap: 10px; align-items: start; }
+.expert .hd input { margin-top: 5px; accent-color: var(--accent); width: 16px; height: 16px; }
+.expert .nm { font-family: var(--f-display); font-size: 1.3rem; line-height: 1.15; }
+.expert .af { font-size: 12.5px; color: var(--muted); }
+.expert .kf { font-size: 13px; }
+.expert .works { font-size: 12px; color: var(--muted); font-style: italic; font-family: var(--f-read); }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.tag { font-family: var(--f-mono); font-size: 10.5px; padding: 2px 8px; border-radius: 99px; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+.tag.academia { color: var(--accent); background: var(--accent-soft); }
+.tag.finance { color: var(--ok); }
+.tag.policy { color: var(--mark); }
+.tag.alive { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.tag.dead { color: var(--danger); background: color-mix(in srgb, var(--danger) 12%, transparent); }
+.tag.warn { color: var(--mark); background: color-mix(in srgb, var(--mark) 14%, transparent); }
+.add-expert { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; margin-top: 16px; padding: 12px; border: 1px dashed var(--line); border-radius: var(--r-lg); }
+@media (max-width: 640px) { .add-expert { grid-template-columns: 1fr; } }
+
+/* Personas */
+.persona-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 14px; }
+@media (max-width: 420px) { .persona-grid { grid-template-columns: 1fr; } }
+.persona { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 16px 18px; display: grid; gap: 10px; align-content: start; min-width: 0; box-shadow: var(--shadow); }
+.persona .hd { display: flex; gap: 8px; align-items: start; justify-content: space-between; flex-wrap: wrap; padding-bottom: 10px; border-bottom: 1px solid var(--line); }
+.persona .who { display: flex; gap: 10px; align-items: center; min-width: 0; }
+.persona .who b { font-family: var(--f-display); font-weight: 400; font-size: 1.35rem; line-height: 1.1; }
+.persona .who .dot { width: 14px; height: 14px; }
+.persona .brief { font-family: var(--f-read); font-size: 15.5px; line-height: 1.6; margin: 0; }
+.persona ul { margin: 3px 0 0; padding-left: 18px; font-size: 13px; }
+.persona li { margin: 2px 0; }
+.persona .lbl { font-family: var(--f-mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.persona details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); }
+.persona details .body { display: grid; gap: 8px; margin-top: 10px; }
+.dot { width: 11px; height: 11px; border-radius: 50%; flex: none; background: hsl(var(--h) var(--agent-s) var(--agent-l)); box-shadow: 0 0 0 2px var(--surface); }
+.dot.human { background: var(--ink); }
+
+/* Storylines */
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.controls .left { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-top: 16px; }
+.stat { background: var(--surface); padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-lg); }
+.stat b { display: block; font-family: var(--f-display); font-size: 2rem; line-height: 1; font-weight: 400; font-variant-numeric: tabular-nums; }
+.stat:nth-child(2) b { color: var(--ok); }
+.stat:nth-child(3) b { color: var(--danger); }
+.stat span { font-size: 12px; color: var(--muted); display: block; margin-top: 4px; }
+.status { margin-top: 12px; font-size: 13px; color: var(--muted); min-height: 1.5em; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.status.err { color: var(--danger); }
+.spinner { width: 13px; height: 13px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; flex: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation: none; } }
+details.box { margin-top: 14px; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); }
+details.box summary { padding: 11px 16px; cursor: pointer; font-weight: 600; }
+details.box .body { padding: 0 16px 16px; display: grid; gap: 8px; }
+.review { margin-top: 16px; border: 1px solid var(--mark); border-radius: var(--r-lg); background: linear-gradient(180deg, color-mix(in srgb, var(--mark) 10%, var(--surface)), var(--surface) 140px); padding: 18px 20px; box-shadow: var(--shadow); }
+.review .eyebrow { color: var(--mark); }
+.review-head { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: start; }
+.review-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 12px; margin-top: 16px; }
+@media (max-width: 420px) { .review-list { grid-template-columns: 1fr; } }
+.rcard { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px; display: grid; gap: 7px; border-top: 3px solid hsl(var(--h) var(--agent-s) var(--agent-l)); min-width: 0; }
+.rcard.rejected { opacity: 0.5; }
+.rcard.rejected textarea { text-decoration: line-through; }
+.rcard .meta { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 12px; color: var(--muted); align-items: center; }
+.rcard .meta b { color: var(--ink); }
+.rcard .prev { font-size: 12.5px; color: var(--muted); font-style: italic; font-family: var(--f-read); }
+.rcard textarea { font-family: var(--f-read); font-size: 15px; min-height: 104px; }
+.rcard .acts { display: flex; gap: 6px; justify-content: space-between; align-items: center; flex-wrap: wrap; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.legend .chip[aria-pressed="true"] .dot { box-shadow: 0 0 0 2px var(--ink); }
+.key { display: flex; flex-wrap: wrap; gap: 16px; font-size: 12px; color: var(--muted); margin-top: 10px; }
+.key span { display: inline-flex; align-items: center; gap: 6px; }
+.key i { width: 10px; height: 10px; border-radius: 50%; display: inline-block; background: var(--muted); }
+.key i.alive { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 25%, transparent); }
+.key i.dead { opacity: 0.35; }
+.key i.rej { background: none; box-shadow: 0 0 0 1.5px var(--danger); }
+.story-grid { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; margin-top: 14px; align-items: start; }
+@media (max-width: 960px) { .story-grid { grid-template-columns: 1fr; } }
+.tree-box { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); overflow: auto; max-height: 76vh; min-width: 0; box-shadow: var(--shadow); }
+.tree-box svg { display: block; }
+.tree-box .empty { padding: 48px 20px; text-align: center; color: var(--muted); }
+svg text { font-family: var(--f-mono); fill: var(--muted); font-size: 11px; }
+svg .colhead { font-size: 10.5px; letter-spacing: 0.06em; }
+svg .colyear { font-family: var(--f-display); font-size: 15px; fill: var(--ink); }
+svg .collane { fill: var(--surface-2); }
+svg .collane.future { fill: none; stroke: var(--line); stroke-dasharray: 3 4; }
+svg .edge { fill: none; stroke: var(--line); stroke-width: 2; opacity: 0.75; }
+svg .edge.dead { opacity: 0.25; }
+svg .edge.on { stroke: var(--mark) !important; stroke-width: 3; opacity: 1; }
+svg .edge.rej { stroke-dasharray: 3 3; }
+svg .halo { fill: var(--ok); opacity: 0.18; }
+svg .node { cursor: pointer; stroke: var(--surface); stroke-width: 2; transition: r 0.15s; }
+svg .node:hover { stroke: var(--ink); }
+svg .node.root { fill: var(--ink); }
+svg .node.dead { opacity: 0.3; }
+svg .node.alive { stroke: var(--surface); stroke-width: 2.5; }
+svg .node.rej { fill: none !important; stroke: var(--danger); stroke-width: 1.5; stroke-dasharray: 2 2; }
+svg .node.sel { stroke: var(--mark); stroke-width: 3.5; }
+svg .node.dim { opacity: 0.12; }
+svg .tip-label { fill: var(--ok); font-weight: 500; }
+svg .dead-label { fill: var(--muted); opacity: 0.8; }
+.reader { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 20px 22px; min-width: 0; box-shadow: var(--shadow); position: sticky; top: 76px; max-height: calc(100vh - 96px); overflow: auto; }
+@media (max-width: 960px) { .reader { position: static; max-height: none; } }
+.reader-head { display: flex; justify-content: space-between; gap: 10px; align-items: start; flex-wrap: wrap; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.reader .title { font-family: var(--f-display); font-size: 2rem; line-height: 1.05; margin-top: 4px; }
+.passage { margin-top: 18px; padding-left: 16px; border-left: 3px solid hsl(var(--h) var(--agent-s) var(--agent-l)); }
+.passage.seed { border-left-color: var(--ink); }
+.passage.human { border-left-color: var(--ink); border-left-style: double; }
+.passage .meta { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 10px; }
+.passage .meta b { color: var(--ink); font-family: var(--f-mono); font-weight: 500; }
+.passage p { font-family: var(--f-read); font-size: 16.5px; line-height: 1.65; margin: 5px 0 0; max-width: 65ch; }
+.passage.seed p::first-letter { font-family: var(--f-display); font-size: 3.1em; float: left; line-height: 0.85; padding: 4px 8px 0 0; color: var(--accent); }
+.passage .why { font-size: 12.5px; color: var(--muted); font-style: italic; margin-top: 5px; }
+.toggle { display: inline-flex; gap: 7px; align-items: center; font-size: 13px; color: var(--muted); }
+.toggle input { accent-color: var(--accent); }
+
+/* Stories archive */
+.arch-grid { display: grid; gap: 12px; }
+.arch { position: relative; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 14px 18px; overflow: hidden; box-shadow: var(--shadow); }
+.arch::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 4px; background: var(--ok); }
+.arch.dead { background: var(--surface-2); box-shadow: none; }
+.arch.dead::before { background: repeating-linear-gradient(180deg, var(--muted) 0 4px, transparent 4px 8px); opacity: 0.5; }
+.arch.dead .ttl, .arch.dead .last { color: var(--muted); }
+.arch .hd { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; justify-content: space-between; }
+.arch .ttl { font-family: var(--f-display); font-size: 1.4rem; line-height: 1.15; }
+.arch .lab { font-family: var(--f-mono); font-size: 12px; margin-right: 8px; padding: 2px 7px; border-radius: 5px; background: var(--ink); color: var(--bg); vertical-align: 3px; }
+.arch.dead .lab { background: var(--muted); }
+.arch .last { font-family: var(--f-read); font-size: 15.5px; margin: 8px 0 0; color: var(--ink); max-width: 75ch; }
+.arch details summary { cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); margin-top: 8px; }
+.arch .full p { font-family: var(--f-read); font-size: 15.5px; margin: 10px 0 0; max-width: 75ch; }
+.arch .full .m { font-size: 11.5px; color: var(--muted); font-family: var(--f-mono); }
+.authors { display: inline-flex; gap: 0; align-items: center; }
+.authors .dot { width: 12px; height: 12px; margin-left: -3px; }
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+.split h3 { display: flex; align-items: center; gap: 8px; }
+@media (max-width: 960px) { .split { grid-template-columns: 1fr; } }
+
+/* Evaluation */
+.eval-grid { display: grid; grid-template-columns: minmax(0, 440px) minmax(0, 1fr); gap: 22px; margin-top: 18px; align-items: start; }
+@media (max-width: 900px) { .eval-grid { grid-template-columns: 1fr; } }
+.scatter { border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); padding: 10px; box-shadow: var(--shadow); }
+.scatter svg { width: 100%; height: auto; display: block; }
+svg .grid { stroke: var(--line); stroke-width: 1; }
+svg .axis { stroke: var(--muted); stroke-width: 1; }
+svg .quad { font-family: var(--f-body); font-size: 10.5px; fill: var(--muted); }
+svg .quadfill { fill: var(--ok); opacity: 0.07; }
+svg .pt { fill: var(--accent); stroke: var(--surface); stroke-width: 2.5; cursor: pointer; }
+svg .pt:hover { fill: var(--mark); }
+svg .pt-label { fill: var(--ink); font-size: 11px; font-weight: 500; }
+svg .whisker { stroke: var(--accent); stroke-width: 1.2; opacity: 0.35; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--shadow); }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--muted); font-size: 11.5px; letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap; background: var(--surface-2); }
+td b { font-weight: 600; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+tbody tr.click { cursor: pointer; }
+tbody tr.click:hover { background: var(--accent-soft); }
+tbody tr:last-child td { border-bottom: 0; }
+.bar { display: inline-block; height: 6px; border-radius: 3px; background: var(--accent); vertical-align: middle; margin-left: 6px; opacity: 0.75; }
+.synth { margin-top: 26px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.synth .overview { grid-column: 1 / -1; font-family: var(--f-display); font-size: clamp(1.3rem, 2.2vw, 1.65rem); line-height: 1.35; max-width: 62ch; padding: 4px 0 8px 20px; border-left: 3px solid var(--mark); }
+.synth > div:not(.overview) { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); padding: 14px 16px; }
+.synth ul { margin: 8px 0 0; padding-left: 18px; }
+.synth li { margin: 6px 0; }
+.stale { color: var(--mark); font-size: 13px; }
+.placeholder { padding: 44px 20px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: var(--r-lg); background: var(--surface); }
+.placeholder h3 { color: var(--ink); font-size: 1.6rem; }
+.placeholder p { max-width: 58ch; margin: 8px auto 16px; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 99px; font-size: 13px; font-weight: 500; z-index: 40; max-width: calc(100% - 32px); box-shadow: var(--shadow); }
+</style>
+
+<header class="mast">
+  <canvas id="mast-canvas" aria-hidden="true"></canvas>
+  <div class="mast-inner">
+    <div class="mast-top">
+      <div class="eyebrow">Participatory scenario lab · ParEvo method</div>
+      <div class="toolbar">
+        <span class="save-state" id="save-state">Saved in this browser</span>
+        <button class="btn sm" id="btn-exercises" aria-expanded="false">My exercises</button>
+        <button class="btn sm" id="btn-export-md">Export Markdown</button>
+        <button class="btn sm" id="btn-export-json">Export JSON</button>
+        <label class="btn sm" for="file-import" style="display:inline-flex;align-items:center">Import</label>
+        <input type="file" id="file-import" accept="application/json,.json" hidden>
+      </div>
+    </div>
+    <div class="mast-main">
+      <div class="brand">
+        <h1>Branching <em>Futures</em></h1>
+        <p>Choose a future to explore, assemble a panel of 8 to 20 expert personas, and watch their storylines branch, compete and die out over several rounds. You review each round before the next begins.</p>
+      </div>
+      <div class="now" id="now"></div>
+    </div>
+  </div>
+</header>
+<div class="wrap">
+  <div id="drawer" hidden></div>
+  <div id="banner"></div>
+
+  <nav class="tabs" role="tablist" id="tabs">
+    <button role="tab" data-tab="topic" id="tab-topic"><span class="n">1</span>Topic</button>
+    <button role="tab" data-tab="experts" id="tab-experts"><span class="n">2</span>Experts <span class="count" id="c-experts"></span></button>
+    <button role="tab" data-tab="personas" id="tab-personas"><span class="n">3</span>Personas <span class="count" id="c-personas"></span></button>
+    <button role="tab" data-tab="tree" id="tab-tree"><span class="n">4</span>Storylines <span class="count" id="c-tree"></span></button>
+    <button role="tab" data-tab="stories" id="tab-stories"><span class="n">5</span>Survived &amp; extinct <span class="count" id="c-stories"></span></button>
+    <button role="tab" data-tab="eval" id="tab-eval"><span class="n">6</span>Evaluation</button>
+  </nav>
+
+  <!-- 1 TOPIC -->
+  <section class="panel" id="panel-topic" hidden>
+    <div id="lock-topic"></div>
+    <div class="topic-grid" style="margin-top:4px">
+      <div class="fields">
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">Start from a scenario</div>
+          <div class="presets" id="presets"></div>
+        </div>
+        <div class="brief-box">
+          <div class="field">
+            <label for="f-brief">Or describe the future you want to hear about</label>
+            <textarea id="f-brief" rows="2" placeholder="e.g. Canada in 2030 under Mark Carney's government, if the Build Canada agenda runs into resistance from provinces and First Nations"></textarea>
+          </div>
+          <div class="toolbar"><button class="btn sm" id="btn-draft">Draft the starting point with Claude</button><span class="status" id="draft-status" style="margin:0"></span></div>
+        </div>
+        <div class="field"><label for="f-title">Exercise name</label><input type="text" id="f-title"></div>
+        <div class="field">
+          <label for="f-question">Focal question</label>
+          <textarea id="f-question" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label for="f-seed">Seed paragraph</label>
+          <textarea id="f-seed" class="story" rows="7"></textarea>
+          <span class="hint">The opening every storyline grows from. Describe the situation at the start year, including its tensions, but not the outcome.</span>
+        </div>
+        <div class="row">
+          <div class="field"><label for="f-start">Start year</label><input type="number" id="f-start" min="1900" max="2300"></div>
+          <div class="field"><label for="f-end">End year</label><input type="number" id="f-end" min="1900" max="2400"></div>
+          <div class="field"><label for="f-words">Words per contribution</label>
+            <select id="f-words"><option value="50">About 50</option><option value="80">About 80</option><option value="120">About 120</option></select></div>
+        </div>
+        <div class="field">
+          <label for="f-guidance">Guidance for participants (optional)</label>
+          <textarea id="f-guidance" rows="2" placeholder="e.g. Keep developments politically plausible. Include at least one surprise per round."></textarea>
+        </div>
+      </div>
+      <aside class="design-box">
+        <h3>Exercise design</h3>
+        <div class="slider">
+          <label for="f-count">Expert personas on the panel</label><output id="o-count"></output>
+          <input type="range" id="f-count" min="8" max="20" step="1">
+        </div>
+        <div class="slider">
+          <label for="f-iter">Iterations (rounds of storytelling)</label><output id="o-iter"></output>
+          <input type="range" id="f-iter" min="2" max="10" step="1">
+        </div>
+        <div class="muted small" id="design-sum"></div>
+        <div class="field">
+          <label>Can personas extend their own storyline?</label>
+          <div class="radio-list" id="r-policy">
+            <label><input type="radio" name="policy" value="never"> <div>Never <span>Each persona must build on someone else's latest paragraph.</span></div></label>
+            <label><input type="radio" name="policy" value="once"> <div>At most once <span>One self-extension per persona in the whole exercise.</span></div></label>
+            <label><input type="radio" name="policy" value="free"> <div>Freely <span>Classic ParEvo. Self-extension is measured, not limited.</span></div></label>
+          </div>
+        </div>
+        <label class="check"><input type="checkbox" id="f-review"> <div><b>Review each iteration before continuing</b><br><span class="muted">Edit or reject contributions, then approve the round.</span></div></label>
+        <div class="field">
+          <label for="f-tier">Model</label>
+          <select id="f-tier"><option value="quick">Quick</option><option value="default">Balanced</option><option value="complex">Deep</option></select>
+        </div>
+      </aside>
+    </div>
+    <div class="next-bar"><span class="muted small" id="topic-next-note"></span><button class="btn primary" id="go-experts">Next: find experts</button></div>
+  </section>
+
+  <!-- 2 EXPERTS -->
+  <section class="panel" id="panel-experts" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Expert pool</h2>
+        <p>Claude proposes 50+ influential voices on your question from universities, large asset managers and investors, and think tanks and policy circles. Choose the panel that will write the futures.</p>
+      </div>
+      <div class="toolbar">
+        <button class="btn primary" id="btn-find">Find 50+ experts</button>
+        <button class="btn" id="btn-autopick">Auto-pick a balanced panel</button>
+      </div>
+    </div>
+    <div class="note"><strong>Check before relying on these.</strong> Names, affiliations and works come from Claude's knowledge and can be wrong or out of date. Each persona simulates a perspective based on a person's public record. It does not speak for them.</div>
+    <div class="status" id="find-status"></div>
+    <div id="lock-experts"></div>
+    <div class="filters" id="filters"></div>
+    <div class="expert-grid" id="expert-grid"></div>
+    <div class="add-expert">
+      <input type="text" id="ae-name" placeholder="Add someone by name" aria-label="Expert name">
+      <input type="text" id="ae-aff" placeholder="Affiliation" aria-label="Affiliation">
+      <button class="btn" id="btn-add-expert">Add expert</button>
+    </div>
+    <div class="next-bar"><span class="muted small" id="experts-next-note"></span><button class="btn primary" id="go-personas">Next: build personas</button></div>
+  </section>
+
+  <!-- 3 PERSONAS -->
+  <section class="panel" id="panel-personas" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Personas</h2>
+        <p>Each selected expert becomes a persona built from their published work, reports and interviews: worldview, positions on this question, reasoning style and blind spots. Paste or upload real excerpts to ground a persona in sources you trust.</p>
+      </div>
+      <div class="toolbar"><button class="btn primary" id="btn-build">Build personas</button></div>
+    </div>
+    <div class="status" id="build-status"></div>
+    <div class="persona-grid" id="persona-grid"></div>
+    <div class="next-bar"><span class="muted small" id="personas-next-note"></span><button class="btn primary" id="btn-start">Start the exercise</button></div>
+  </section>
+
+  <!-- 4 STORYLINES -->
+  <section class="panel" id="panel-tree" hidden>
+    <div class="controls">
+      <div class="left">
+        <button class="btn primary" id="btn-run">Run iteration</button>
+        <button class="btn" id="btn-run-all">Run all remaining</button>
+        <button class="btn danger" id="btn-stop" hidden>Stop</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="t-authors"> Show authors</label>
+    </div>
+    <div class="status" id="run-status"></div>
+    <div id="review"></div>
+    <div class="stats" id="stats"></div>
+    <details class="box" id="human-box">
+      <summary>Join the next iteration yourself</summary>
+      <div class="body">
+        <span class="muted small">Your paragraph is added alongside the personas' contributions when the next iteration runs.</span>
+        <div class="field"><label for="h-target">Storyline to extend</label><select id="h-target"></select></div>
+        <div class="field"><label for="h-text">Your contribution</label><textarea id="h-text" class="story" rows="3"></textarea></div>
+      </div>
+    </details>
+    <div class="legend" id="legend"></div>
+    <div class="key"><span><i class="alive"></i>Surviving tip</span><span><i class="dead"></i>Extinct branch</span><span><i class="rej"></i>Rejected in review</span><span>Click any point to read its storyline</span></div>
+    <div class="story-grid">
+      <div class="tree-box" id="tree"></div>
+      <div class="reader" id="reader"></div>
+    </div>
+  </section>
+
+  <!-- 5 STORIES -->
+  <section class="panel" id="panel-stories" hidden>
+    <div class="section-head">
+      <div>
+        <h2>Which futures survived</h2>
+        <p>Every storyline in the network, from the seed to its last paragraph. Surviving storylines were still being extended in the latest iteration. Extinct ones were left behind when no persona chose to continue them.</p>
+      </div>
+      <div class="filters" id="arch-filters" style="margin:0"></div>
+    </div>
+    <div id="arch-body"></div>
+    <h2 style="margin-top:28px">Persona influence</h2>
+    <p class="muted" style="margin:4px 0 12px;font-size:13.5px">How each persona shaped the network: how often they built on their own work, and how much of what they wrote survived.</p>
+    <div class="table-wrap" id="influence"></div>
+  </section>
+
+  <!-- 6 EVALUATION -->
+  <section class="panel" id="panel-eval" hidden>
+    <div class="controls">
+      <div>
+        <h2>How the panel judges the futures</h2>
+        <div class="muted" style="font-size:13px">Each persona rates every surviving storyline for likelihood and desirability, 1 to 5. A synthesis then names each storyline and draws out drivers and signposts.</div>
+      </div>
+      <div class="left">
+        <label class="toggle"><input type="checkbox" id="t-exclude-own"> Exclude ratings of storylines a persona co-wrote</label>
+        <button class="btn primary" id="btn-eval">Run evaluation</button>
+        <button class="btn danger" id="btn-eval-stop" hidden>Stop</button>
+      </div>
+    </div>
+    <div class="status" id="eval-status"></div>
+    <div id="eval-body"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+"use strict";
+
+// ---------- Constants ----------
+const CATS = {
+  academia: { label: "Academia", n: 18, desc: "professors and senior researchers at leading universities and research institutes" },
+  finance: { label: "Investors & asset managers", n: 17, desc: "chief economists, strategists, CIOs and leaders at large asset managers, pension funds, banks, insurers, rating agencies and investment firms" },
+  policy: { label: "Think tanks & policy", n: 18, desc: "think-tank and policy-institute experts, former senior officials and central bankers, industry, labour and Indigenous organisations, and leading journalists and commentators" },
+  other: { label: "Added by you", n: 0, desc: "" }
+};
+
+const PRESETS = [
+  { key: "canada", title: "Build Canada, 2030", blurb: "Carney's nation-building agenda under pressure",
+    question: "What could Canada look like in 2030 if Mark Carney's Build Canada agenda succeeds, stalls or backfires?",
+    seed: "Autumn 2026. Prime Minister Mark Carney's government is a year and a half into its Build Canada agenda: a federal Major Projects Office fast-tracking pipelines, ports, mines and power lines; Build Canada Homes promising to double the pace of housebuilding; defence spending rising toward NATO targets; and a push to tear down interprovincial trade barriers. US tariffs still weigh on steel, aluminium and autos. The deficit is far larger than planned, and provinces and First Nations are testing how far 'national interest' can override their consent.",
+    startYear: 2026, endYear: 2030, iterations: 4 },
+  { key: "europe", title: "Europe Re-arms, 2035", blurb: "Defence autonomy, debt and industrial policy",
+    question: "How might Europe's push for defence autonomy reshape its economy, politics and alliances by 2035?",
+    seed: "2026. European governments have committed to the largest rise in defence spending since the Cold War, financed partly through joint EU borrowing. Arms makers are expanding factories, but supply chains for munitions, chips and rare earths remain thin. Fiscal rules are strained, voters are divided between security and welfare spending, and the transatlantic relationship is less predictable than at any time since 1945.",
+    startYear: 2026, endYear: 2035, iterations: 5 },
+  { key: "ai", title: "AI and White-Collar Work, 2032", blurb: "Agents in law, finance and the public sector",
+    question: "How will AI agents change white-collar work, careers and inequality in advanced economies by 2032?",
+    seed: "2026. AI agents now draft contracts, reconcile accounts, write code and answer most customer queries at large firms. Graduate hiring in law, consulting and finance has slowed, while productivity statistics show only modest gains. Regulators are debating liability for agent errors, unions are bargaining over automation, and governments are unsure whether to tax, retrain or simply wait.",
+    startYear: 2026, endYear: 2032, iterations: 4 }
+];
+
+const LIBRARY = [
+  { name: "Dr. Ines Vermeer", role: "Climate scientist", lens: "Follows physical evidence and tipping points. Cautious about optimism that ignores the data.", cat: "academia" },
+  { name: "Joost Hendrikx", role: "Regional water board manager", lens: "Thinks in budgets, legal mandates and what can be built in five years. Pragmatic, distrusts grand plans.", cat: "policy" },
+  { name: "Marleen Peeters", role: "Farmer, agri-cooperative chair", lens: "Sees land, livelihoods and rural pride. Wary of decisions made in cities.", cat: "policy" },
+  { name: "Tomasz Wójcik", role: "Insurance actuary", lens: "Prices risk. Expects markets to move before governments do, often brutally.", cat: "finance" },
+  { name: "Amira El Idrissi", role: "Youth climate organiser", lens: "Looks for justice, mobilisation and who is left out. Believes public pressure changes outcomes.", cat: "policy" },
+  { name: "Lukas Brandt", role: "Energy grid engineer", lens: "Watches infrastructure interdependencies and single points of failure.", cat: "academia" },
+  { name: "Hélène Dubois", role: "Geopolitical analyst", lens: "Reads everything through power, borders and alliances. Sceptical of cooperation lasting.", cat: "policy" },
+  { name: "Kofi Mensah", role: "Science-fiction writer", lens: "The wild card. Introduces surprising but plausible technologies, cultures and weak signals.", cat: "other" }
+];
+
+// ---------- Worked example (fictional panel, illustrative content) ----------
+function buildExample() {
+  const experts = LIBRARY.map((a, i) => ({ id: "p" + (i + 1), name: a.name, affiliation: a.role, category: a.cat, stance: "", knownFor: a.lens, works: [], selected: true, fictional: true }));
+  const personas = {}; experts.forEach(e => { personas[e.id] = { brief: e.knownFor, beliefs: [], positions: [], sources: [], style: "", blindSpots: "", grounded: false, userSources: "" }; });
+  const agents = experts.map(e => ({ id: e.id, name: e.name, role: e.affiliation, lens: e.knownFor }));
+  const N = (id, parent, gen, agent, text, why) => ({ id, parent, gen, agent, text, why });
+  const nodes = [
+    N("root", null, 0, null, "October 2026. After the second 'once-in-a-century' Meuse flood in five years, the Dutch, Belgian and German governments agree to a joint delta review. Budgets are tight, insurers are pulling back from Limburg, and last summer's drought lowered the Rhine enough to halt barge traffic for three weeks."),
+    N("n1", "root", 1, "p1", "The joint review's first report, published in March 2027, revises the Meuse design discharge upward by 18%. Models now treat back-to-back flood and drought years as the base case. The three governments accept the numbers but argue for two years over who pays for the 40 km of dike reinforcement they imply.", "The physical baseline has shifted and policy will lag behind it."),
+    N("n2", "root", 1, "p2", "Waterschap Limburg stops waiting for The Hague. In 2027 it designates six low-lying polders near Roermond as controlled overflow areas, compensating farmers €9,000 per hectare. The plan is legally fragile, but it works: the winter 2028 peak is shaved by 40 cm and no town floods.", "Local bodies act first when national ones stall."),
+    N("n3", "root", 1, "p3", "Farmers along the Meuse split. Some sign paid flood-storage contracts; others sell to logistics developers who build on raised platforms. By 2029 a quarter of the farmland between Venlo and Maastricht has changed use, and the cooperative's dairy intake falls by a third.", "Land use is where the pressure will show first."),
+    N("n4", "root", 1, "p4", "In 2028 two major insurers stop writing new household flood cover south of Eindhoven. Mortgage lenders follow with stricter valuations. House prices in Valkenburg and Meerssen fall 22% in eighteen months, and the cabinet is forced to debate a public reinsurance pool modelled on France's Cat Nat.", "Markets will reprice risk before politicians admit it."),
+    N("n5", "root", 1, "p5", "A student coalition, Maas Mondig, sues the Dutch state in 2027, arguing that the delta review ignores downstream communities in Belgium. The case stalls, but the campaign wins something larger: a cross-border citizens' assembly with a formal right to comment on every major water decision.", "Public pressure can open new democratic channels."),
+    N("n6", "root", 1, "p6", "The 2027 summer drought cuts Rhine levels again, and two gas-fired plants that depend on river cooling throttle output. TenneT fast-tracks battery storage and air-cooled capacity. Water stops being only a flood problem and becomes an energy security problem.", "Drought hits the grid through cooling water."),
+    N("n7", "root", 1, "p7", "Germany's new coalition, facing its own Rhine shipping crisis, proposes a Rhine–Meuse Basin Authority with binding powers over upstream dams and abstractions. The Netherlands welcomes it; Belgium's regions are divided. Negotiations open in Aachen in 2029.", "Shared rivers force a question of sovereignty."),
+    N("n8", "root", 1, "p8", "In 2029 a Maastricht start-up launches 'floodmarkets', a prediction market where residents trade on river levels. It is half joke, half protest. Within a year its prices beat official forecasts, and the water board quietly starts watching them.", "A weak signal: citizens building their own sensing."),
+    N("m1", "n7", 2, "p1", "The Basin Authority is founded in 2031 with a narrower mandate than proposed: it can model and recommend, and it can veto new abstractions. Its first act is to publish a shared hydrological model, ending a decade of three countries arguing over three sets of numbers.", "A shared model is the precondition for everything else."),
+    N("m2", "n2", 2, "p6", "The overflow polders become national policy in 2031 under a 'Room for the Meuse' programme. Fourteen more sites are designated. Resistance grows in villages asked to flood so that cities stay dry, and a farmer blockade closes the A2 for four days in 2032.", "Scaling a local fix exposes who pays for it."),
+    N("m3", "n2", 2, "p3", "Farmers in the overflow zones start growing flood-tolerant crops: willow for biomass, reed for building panels, rice trials near Grubbenvorst. By 2033 'wet farming' earns more per hectare than maize did, but only for farms big enough to absorb a lost season.", "Adaptation creates winners among farmers too."),
+    N("m4", "n4", 2, "p2", "The public reinsurance pool, 'Waterborg', launches in 2031, funded by a levy on every home policy in the country. It steadies prices but sets off a fierce debate: should a Groningen renter subsidise a riverside villa in Limburg? From 2033 premiums are tied to property-level adaptation.", "Solidarity schemes need conditions to survive politically."),
+    N("m5", "n4", 2, "p5", "Falling prices draw new people to the Meuse valley: young families and remote workers buying flood-exposed homes cheaply. They organise fast, forming adaptation co-ops that raise floors and share pumps. By 2034 they are the valley's most influential voters.", "Crisis creates new constituencies."),
+    N("m6", "n6", 2, "p4", "By 2033 the region's grid runs on a mix built for low-water years: floating solar on gravel-pit lakes, heat pumps drawing on groundwater, and a hydrogen backbone along the old Meuse shipping route. The barges are gone; the pipeline now carries more energy than the river ever carried freight.", "Infrastructure redesigned around drought."),
+    N("m7", "n7", 2, "p8", "Talks in Aachen collapse in 2031 when Wallonia refuses binding limits on its industrial abstractions. Germany and the Netherlands sign a bilateral treaty instead. Belgium becomes the gap in the system, and Liège becomes the place cross-border floods get blamed on.", "Cooperation fails at its weakest link."),
+    N("m8", "n8", 2, "p7", "Floodmarket prices start to move policy. In 2032 a sharp spike in bets on a winter surge prompts an early evacuation of Venlo's lower town, two days before official warnings. The flood comes. Regulators scramble to decide whether the market is a forecasting tool or a gambling site.", "The weak signal becomes institutional."),
+    N("k1", "m1", 3, "p3", "With a shared model, the Basin Authority runs the first coordinated reservoir release across three countries in winter 2036. The Meuse peak at Maastricht arrives a day later and 30 cm lower than forecast. Nobody celebrates in public, but budgets for joint operations triple.", "Shared data turns into shared operations."),
+    N("k2", "m1", 3, "p7", "The Authority's veto is tested in 2035 when a chip fab near Eindhoven applies for a vast groundwater abstraction. The Authority blocks it. The company moves to Saxony, and the debate shifts from flood safety to which industries a water-scarce delta can afford to host.", "Water limits become industrial policy."),
+    N("k3", "m4", 3, "p1", "By 2037 Waterborg prices risk street by street. Properties that adapt pay 60% less; those that don't become uninsurable and unmortgageable. Insurance has become the country's most powerful planning tool, and critics say it is quietly deciding which towns have a future.", "Price signals end up doing the planning."),
+    N("k4", "m5", 3, "p8", "The adaptation co-ops federate in 2035 and win control of three municipal councils. They rewrite building codes to require amphibious foundations on new homes. Meerssen, once written off, now draws architects from Bangladesh and Louisiana studying how a town learned to float.", "Bottom-up adaptation scales through politics."),
+    N("k5", "m5", 3, "p4", "Newcomers and old farming families clash over land. The co-ops want floodplain for parks and buffer zones; farmers want compensation at pre-crash prices. A 2036 land swap brokered by the province ends the standoff but leaves the farming population half what it was in 2026.", "Someone pays for the valley's renewal."),
+    N("k6", "m2", 3, "p2", "Facing blockades, the cabinet changes course in 2035: overflow villages get a share of the land value their flooding protects downstream. Payments of up to €40,000 per household turn resentment into negotiation. Volunteers for new overflow sites soon outnumber the sites needed.", "Fair compensation unlocks consent."),
+    N("k7", "m6", 3, "p6", "The grid built for drought proves vulnerable to the opposite. In 2037 a winter flood swamps two substations feeding the hydrogen electrolysers near Venlo. The region loses power for 60 hours, and planners realise they designed for one extreme at a time.", "Compound risk: optimising for one hazard."),
+    N("k8", "m8", 3, "p5", "Floodmarkets are licensed in 2035 as an official 'citizen sensor network' and merged into the national warning system. Betting is capped, but the data flows. By 2038 Dutch forecasts blend satellites, hydrological models and the crowd's money, and three other basins copy the system.", "The crowd becomes infrastructure.")
+  ];
+  const target = { k1: [3.0, 4.4], k2: [2.9, 3.0], k3: [4.1, 2.3], k4: [2.6, 4.3], k5: [3.8, 2.4], k6: [3.4, 3.9], k7: [3.3, 1.6], k8: [2.1, 3.5] };
+  const ratings = {};
+  agents.forEach((a, ai) => {
+    ratings[a.id] = {};
+    Object.entries(target).forEach(([nid, [l, d]], si) => {
+      const j1 = Math.sin((ai + 1) * 12.9898 + (si + 1) * 78.233) * 43758.5453;
+      const j2 = Math.sin((ai + 1) * 39.3468 + (si + 1) * 11.135) * 24634.6345;
+      ratings[a.id][nid] = { l: clamp(Math.round(l + (j1 - Math.floor(j1) - 0.5) * 2.2), 1, 5), d: clamp(Math.round(d + (j2 - Math.floor(j2) - 0.5) * 2.2), 1, 5) };
+    });
+  });
+  return migrate({
+    id: "example-delta", isExample: true,
+    title: "Living with water: the Meuse–Rhine delta",
+    question: "How might communities in the Meuse–Rhine delta live with floods and droughts by 2038?",
+    seed: nodes[0].text, startYear: 2026, endYear: 2038, iterations: 3, targetCount: 8, words: 80, tier: "default", guidance: "",
+    selfPolicy: "once", reviewEach: true, excludeOwn: true,
+    experts, personas, agents, nodes, currentGen: 3, reviewedGen: 3,
+    evaluation: { gen: 3, ratings, synthesis: {
+      storylines: {
+        k1: { title: "Three Countries, One River", summary: "A shared model turns into coordinated reservoir operations across borders." },
+        k2: { title: "The Water Budget Economy", summary: "Water limits start deciding which industries the delta can host." },
+        k3: { title: "The Actuarial Map", summary: "Street-level insurance pricing quietly decides which towns survive." },
+        k4: { title: "Amphibious Meerssen", summary: "Newcomer co-ops take local power and make the valley a model of floating homes." },
+        k5: { title: "Land After the Crash", summary: "Renewal of the valley comes at the cost of halving its farming families." },
+        k6: { title: "Paid to Flood", summary: "Sharing protected land value with overflow villages turns resistance into consent." },
+        k7: { title: "One Extreme at a Time", summary: "A grid redesigned for drought fails in the next flood." },
+        k8: { title: "The Crowd as Gauge", summary: "A protest prediction market becomes part of the national warning system." }
+      },
+      overview: "The eight surviving futures grew from five of the original eight openings. Three early lines (the science-led dike debate, the farm-land shift and the citizens' assembly) died out, which suggests the panel found institutional, financial and infrastructural responses more generative than slow consensus. The most likely futures are the least comfortable: insurance pricing and land conflict do much of the adapting. The most desirable futures depend on cooperation that the panel rated as only moderately likely.",
+      drivers: ["Who pays: compensation design decides whether overflow areas are accepted or resisted", "Insurance and mortgage markets acting faster than legislation", "Cross-border governance of the Meuse, with Belgium as the weak link", "Compound hazards: flood and drought hitting the same infrastructure", "New constituencies formed by price crashes and migration into risk zones"],
+      divergences: ["2028: insurers withdraw. From here the valley either fragments by price or is rebuilt by newcomers", "2031: the Basin Authority survives with a veto power, or talks collapse into bilateral deals", "2032: overflow villages blockade, then are either paid off or forced through"],
+      signposts: ["Insurer withdrawal notices and mortgage valuation rules for flood zones", "Whether the Basin Authority gets powers beyond modelling", "Size of compensation per household in overflow agreements", "Substation and electrolyser siting relative to flood maps", "Regulatory status of citizen forecasting and prediction markets"]
+    } }
+  });
+}
+
+function newExercise(preset) {
+  const p = preset || PRESETS[0];
+  return migrate({
+    id: "ex-" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), isExample: false,
+    title: p.title, question: p.question, seed: p.seed, startYear: p.startYear, endYear: p.endYear, iterations: p.iterations,
+    targetCount: 12, words: 80, tier: "default", guidance: "", selfPolicy: "once", reviewEach: true, excludeOwn: true,
+    experts: [], personas: {}, agents: [], nodes: [{ id: "root", parent: null, gen: 0, agent: null, text: p.seed }], currentGen: 0, reviewedGen: 0, evaluation: null
+  });
+}
+
+function migrate(v) {
+  const d = { title: "Untitled exercise", question: "", seed: "", startYear: 2026, endYear: 2036, iterations: 4, targetCount: 12, words: 80, tier: "default", guidance: "",
+    selfPolicy: "once", reviewEach: true, excludeOwn: true, experts: [], personas: {}, agents: [], nodes: [], currentGen: 0, reviewedGen: 0, evaluation: null, isExample: false };
+  const s = Object.assign({}, d, v);
+  if (!s.id) s.id = "ex-" + Date.now().toString(36);
+  if (!s.nodes.some(n => n.id === "root")) s.nodes.unshift({ id: "root", parent: null, gen: 0, agent: null, text: s.seed });
+  if (!s.experts.length && s.agents.length) {
+    s.experts = s.agents.map(a => ({ id: a.id, name: a.name, affiliation: a.role, category: "other", stance: "", knownFor: a.lens || "", works: [], selected: true }));
+    s.agents.forEach(a => { if (!s.personas[a.id]) s.personas[a.id] = { brief: a.lens || "", beliefs: [], positions: [], sources: [], style: "", blindSpots: "", grounded: false, userSources: "" }; });
+  }
+  if (s.reviewedGen == null || s.reviewedGen > s.currentGen) s.reviewedGen = s.currentGen;
+  s.targetCount = clamp(s.targetCount || 12, 8, 20);
+  return s;
+}
+
+// ---------- Utilities ----------
+function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+function esc(s) { return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])); }
+const $ = id => document.getElementById(id);
+function uid(p) { return (p || "x") + Math.random().toString(36).slice(2, 9); }
+function mean(a) { return a.length ? a.reduce((s, v) => s + v, 0) / a.length : NaN; }
+function sd(a) { if (a.length < 2) return 0; const m = mean(a); return Math.sqrt(mean(a.map(v => (v - m) ** 2))); }
+function chunk(arr, n) { const out = []; for (let i = 0; i < arr.length; i += n) out.push(arr.slice(i, i + n)); return out; }
+function normName(s) { return String(s || "").toLowerCase().replace(/^(dr|prof|professor|sir|dame|hon)\.?\s+/g, "").replace(/[^a-z0-9À-ɏ]+/g, " ").trim(); }
+async function pool(tasks, limit) { let i = 0; const run = async () => { while (i < tasks.length) { const k = i++; await tasks[k](); } }; await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, run)); }
+let toastTimer;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3400); }
+function ago(ts) { const s = (Date.now() - ts) / 1000; if (s < 90) return "just now"; if (s < 3600) return Math.round(s / 60) + " min ago"; if (s < 86400) return Math.round(s / 3600) + " h ago"; return Math.round(s / 86400) + " days ago"; }
+
+// ---------- State ----------
+const KEY = "branching-futures-v2";
+let S = null;
+try { const raw = localStorage.getItem(KEY); if (raw) S = migrate(JSON.parse(raw)); } catch (e) {}
+const firstVisit = !S;
+if (!S) S = newExercise(PRESETS[0]);
+const ui = { tab: firstVisit ? "topic" : "tree", selected: null, highlight: null, showAuthors: true, running: false, busy: null, controllers: new Set(), stop: false, armed: null, catFilter: "all", search: "", archFilter: "all" };
+try { const t = localStorage.getItem(KEY + ":tab"); if (t && !firstVisit) ui.tab = t; } catch (e) {}
+let sample = null, downloads = null, samplingChecked = false;
+
+// ---------- Persistence: browser cache + private account storage ----------
+const store = { db: null, uid: null, timer: null, chain: Promise.resolve(), saved: {}, state: "local" };
+function setSaveState(state, text) {
+  store.state = state;
+  const el = $("save-state");
+  el.className = "save-state" + (state === "cloud" ? " cloud" : state === "err" ? " err" : "");
+  el.textContent = text;
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (!store.db || S.isExample) return;
+  setSaveState("cloud", "Saving…");
+  clearTimeout(store.timer);
+  const snap = S;
+  store.timer = setTimeout(() => { store.chain = store.chain.then(() => pushRemote(snap)).catch(() => {}); }, 1200);
+}
+function splitForStore(ex) {
+  const { nodes, ...rest } = ex;
+  const gens = {};
+  nodes.forEach(n => { (gens[n.gen] = gens[n.gen] || []).push(n); });
+  return { rest, gens };
+}
+async function pushRemote(ex) {
+  const base = "data/users/" + store.uid;
+  const { rest, gens } = splitForStore(ex);
+  const mem = store.saved[ex.id] || (store.saved[ex.id] = { main: null, gens: {} });
+  try {
+    const restStr = JSON.stringify(rest);
+    if (restStr !== mem.main) {
+      await store.db.collection(base).doc(ex.id).set({ ...rest, updatedAt: Date.now(), nAgents: ex.agents.length || ex.targetCount });
+      mem.main = restStr;
+    }
+    for (const g of Object.keys(gens)) {
+      const str = JSON.stringify(gens[g]);
+      if (str !== mem.gens[g]) { await store.db.doc(`${base}/${ex.id}/gens/g${g}`).set({ gen: Number(g), nodes: gens[g] }); mem.gens[g] = str; }
+    }
+    for (const g of Object.keys(mem.gens)) {
+      if (!gens[g]) { await store.db.doc(`${base}/${ex.id}/gens/g${g}`).delete(); delete mem.gens[g]; }
+    }
+    setSaveState("cloud", "Saved to your account");
+  } catch (e) {
+    setSaveState("err", e && e.code === "quota_exceeded" ? "Storage full. Delete old exercises" : "Couldn't save to your account. Saved in this browser");
+  }
+}
+async function listRemote() {
+  const snap = await store.db.collection("data/users/" + store.uid).orderBy("updatedAt", "desc").limit(60).get();
+  return snap.docs.map(d => { const x = d.data(); return { id: d.id, title: x.title, updatedAt: x.updatedAt, currentGen: x.currentGen, iterations: x.iterations, nAgents: x.nAgents }; });
+}
+async function openRemote(id) {
+  const base = "data/users/" + store.uid;
+  const main = await store.db.collection(base).doc(id).get();
+  if (!main.exists) throw new Error("missing");
+  const gs = await store.db.collection(`${base}/${id}/gens`).get();
+  const nodes = []; const mem = { main: null, gens: {} };
+  gs.docs.map(d => d.data()).sort((a, b) => a.gen - b.gen).forEach(g => { nodes.push(...g.nodes); mem.gens[g.gen] = JSON.stringify(g.nodes); });
+  const { updatedAt, nAgents, ...rest } = main.data();
+  const ex = migrate({ ...JSON.parse(JSON.stringify(rest)), nodes: JSON.parse(JSON.stringify(nodes)) });
+  mem.main = JSON.stringify(splitForStore(ex).rest);
+  store.saved[ex.id] = mem;
+  return ex;
+}
+async function deleteRemote(id) {
+  const base = "data/users/" + store.uid;
+  const gs = await store.db.collection(`${base}/${id}/gens`).get();
+  for (const d of gs.docs) await store.db.doc(`${base}/${id}/gens/${d.id}`).delete();
+  await store.db.collection(base).doc(id).delete();
+  delete store.saved[id];
+}
+
+// ---------- Derived helpers ----------
+const HUMAN = { id: "you", name: "You", role: "Human participant", lens: "" };
+function agentById(id) { return id === "you" ? HUMAN : S.agents.find(a => a.id === id); }
+function hueOf(id) { const i = S.agents.findIndex(a => a.id === id); return i < 0 ? 0 : Math.round((i * 137.508 + 205) % 360); }
+function nodeById(id) { return S.nodes.find(n => n.id === id); }
+function allChildren(id) { return S.nodes.filter(n => n.parent === id); }
+function childrenOf(id) { return S.nodes.filter(n => n.parent === id && !n.rejected); }
+function started() { return S.nodes.length > 1; }
+function span() { return (S.endYear - S.startYear) / S.iterations; }
+function periodOf(gen) {
+  if (gen === 0) return String(S.startYear);
+  const a = Math.round(S.startYear + (gen - 1) * span()), b = Math.round(S.startYear + gen * span());
+  return a === b ? String(a) : a + "–" + b;
+}
+function endYearOf(gen) { return gen === 0 ? S.startYear : Math.round(S.startYear + gen * span()); }
+function pathTo(id) { const out = []; let n = nodeById(id); while (n) { out.unshift(n); n = n.parent ? nodeById(n.parent) : null; } return out; }
+function storyText(id) { return pathTo(id).map(n => n.text).join("\n\n"); }
+function treeOrder() { const out = []; const walk = n => { out.push(n); allChildren(n.id).forEach(walk); }; const r = nodeById("root"); if (r) walk(r); return out; }
+function liveTips() { return treeOrder().filter(n => n.gen === S.currentGen && !n.rejected); }
+function labelMap() { const m = {}; liveTips().forEach((n, i) => { m[n.id] = S.currentGen === 0 ? "S0" : "S" + (i + 1); }); return m; }
+function isDead(n) { return n.gen > 0 && !n.rejected && n.gen < S.currentGen && childrenOf(n.id).length === 0; }
+function extinctLeaves() { return treeOrder().filter(isDead); }
+function extinctLabels() { const m = {}; extinctLeaves().forEach((n, i) => { m[n.id] = "E" + (i + 1); }); return m; }
+function selectedExperts() { return S.experts.filter(e => e.selected); }
+function authorsOf(id) { return [...new Set(pathTo(id).filter(p => p.agent).map(p => p.agent))]; }
+function pendingReview() { return S.reviewEach && S.currentGen > S.reviewedGen; }
+
+// ---------- Errors ----------
+function errCopy(e) {
+  const c = e && e.code;
+  if (c === "not_granted") return "Claude access was declined for this page. Allow it from the artifact's Permissions menu to run the panel.";
+  if (c === "sampling_disabled") return "Claude isn't available for this account.";
+  if (c === "rate_limited") return "Too many requests right now. Wait a minute, then continue.";
+  if (c === "session_expired") return "Your session expired. Sign in again, then continue.";
+  if (c === "invalid_json") return "Claude's reply couldn't be read. Try again.";
+  if (c === "prompt_too_large") return "The storylines are too long to send. Use fewer personas or shorter contributions.";
+  if (c === "refused") return "Claude declined this request. Try rewording the question or seed paragraph.";
+  if (c === "cancelled") return "Stopped.";
+  return "Something went wrong reaching Claude. Try again.";
+}
+const FATAL = new Set(["not_granted", "sampling_disabled", "rate_limited", "session_expired", "not_declared", "capability_disabled", "capability_removed"]);
+async function ask(prompt, tier) {
+  const ctl = new AbortController(); ui.controllers.add(ctl);
+  try { return await sample.json(prompt, { modelTier: tier || S.tier, signal: ctl.signal, cache: false }); }
+  finally { ui.controllers.delete(ctl); }
+}
+function stopAll() { ui.stop = true; ui.controllers.forEach(c => c.abort()); }
+function busy(kind) { ui.busy = kind; renderAll(); }
+
+// ---------- Tabs ----------
+const TABS = ["topic", "experts", "personas", "tree", "stories", "eval"];
+function setTab(t) { ui.tab = t; try { localStorage.setItem(KEY + ":tab", t); } catch (e) {} renderAll(); window.scrollTo({ top: 0 }); }
+document.querySelectorAll("nav.tabs button").forEach(b => b.addEventListener("click", () => setTab(b.dataset.tab)));
+
+function renderTabs() {
+  TABS.forEach(k => { $("panel-" + k).hidden = k !== ui.tab; $("tab-" + k).setAttribute("aria-selected", String(k === ui.tab)); });
+  const sel = selectedExperts().length;
+  const built = selectedExperts().filter(e => S.personas[e.id]?.brief).length;
+  $("c-experts").textContent = S.experts.length ? `${sel}/${S.targetCount}` : "";
+  $("c-personas").textContent = sel ? `${built}/${sel}` : "";
+  $("c-tree").textContent = started() ? `${S.currentGen}/${S.iterations}` : "";
+  $("c-stories").textContent = S.currentGen ? `${liveTips().length}·${extinctLeaves().length}` : "";
+  const done = { topic: !!(S.seed && S.question), experts: sel === S.targetCount || started(), personas: started() || (sel > 0 && built === sel), tree: S.currentGen >= S.iterations && !pendingReview(), stories: S.currentGen >= S.iterations, eval: !!S.evaluation?.synthesis };
+  TABS.forEach(k => $("tab-" + k).classList.toggle("done", !!done[k]));
+}
+
+// ---------- Banner & drawer ----------
+function renderBanner() {
+  const parts = [];
+  if (S.isExample) parts.push(`<span><strong>Worked example.</strong> A fictional panel and illustrative storylines show what a finished exercise looks like. <button class="linkish" id="b-new">Start your own exercise</button></span>`);
+  if (sample === null && samplingChecked) parts.push(`<span><strong>The panel can't run here.</strong> Open this page in Claude to find experts, build personas and run iterations. You can still browse, edit and import exercises.</span>`);
+  $("banner").innerHTML = parts.length ? `<div class="banner">${parts.join("")}</div>` : "";
+  const b = $("b-new"); if (b) b.onclick = () => { switchTo(newExercise(PRESETS[0])); setTab("topic"); };
+}
+$("btn-exercises").onclick = async () => {
+  const d = $("drawer");
+  if (!d.hidden) { d.hidden = true; $("btn-exercises").setAttribute("aria-expanded", "false"); return; }
+  d.hidden = false; $("btn-exercises").setAttribute("aria-expanded", "true");
+  renderDrawer(null);
+  if (store.db) { try { renderDrawer(await listRemote()); } catch (e) { renderDrawer([], "Couldn't load your saved exercises."); } }
+};
+function renderDrawer(list, err) {
+  const d = $("drawer");
+  const head = `<div class="drawer"><div class="toolbar" style="justify-content:space-between"><b>Exercises</b><span class="toolbar"><button class="btn sm primary" id="d-new">New exercise</button><button class="btn sm" id="d-example">Open worked example</button></span></div>`;
+  let body;
+  if (!store.db) body = `<p class="muted small">Saving to your account isn't available in this view, so only the current exercise is kept, in this browser. Use Export JSON to keep a copy.</p>`;
+  else if (list === null) body = `<div class="status"><span class="spinner"></span> Loading your exercises…</div>`;
+  else if (err) body = `<p class="muted small">${esc(err)}</p>`;
+  else if (!list.length) body = `<p class="muted small">No saved exercises yet. Your exercises save to your account automatically as you work.</p>`;
+  else body = list.map(x => `<div class="rowx ${x.id === S.id ? "current" : ""}"><div><b>${esc(x.title || "Untitled")}</b><div class="muted small">Iteration ${x.currentGen || 0} of ${x.iterations} · ${x.nAgents || "?"} personas · updated ${ago(x.updatedAt || Date.now())}</div></div>
+    <span class="toolbar">${x.id === S.id ? `<span class="tag">open</span>` : `<button class="btn sm" data-open="${esc(x.id)}">Open</button>`}<button class="btn sm danger" data-del="${esc(x.id)}">Delete</button></span></div>`).join("");
+  d.innerHTML = head + body + `</div>`;
+  $("d-new").onclick = () => { d.hidden = true; switchTo(newExercise({ title: "Untitled exercise", question: "", seed: "", startYear: new Date().getFullYear(), endYear: new Date().getFullYear() + 8, iterations: 4 })); setTab("topic"); };
+  $("d-example").onclick = () => { d.hidden = true; switchTo(buildExample()); setTab("tree"); };
+  d.querySelectorAll("[data-open]").forEach(b => b.onclick = async () => {
+    b.disabled = true;
+    try { switchTo(await openRemote(b.dataset.open)); d.hidden = true; setTab(S.currentGen ? "tree" : "topic"); }
+    catch (e) { toast("Couldn't open that exercise."); b.disabled = false; }
+  });
+  d.querySelectorAll("[data-del]").forEach(b => b.onclick = async () => {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "Confirm delete"; b.classList.add("armed"); return; }
+    b.disabled = true;
+    try { await deleteRemote(b.dataset.del); if (b.dataset.del === S.id) switchTo(newExercise(PRESETS[0])); renderDrawer(await listRemote()); toast("Exercise deleted."); }
+    catch (e) { toast("Couldn't delete it. Try again."); b.disabled = false; }
+  });
+}
+function switchTo(ex) {
+  if (ui.running || ui.busy) { toast("Wait for the current task to finish, or stop it first."); return; }
+  S = ex; ui.selected = null; ui.highlight = null; ui.armed = null;
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {}
+  if (store.db && !S.isExample) setSaveState("cloud", "Saved to your account");
+  renderAll();
+}
+
+// ---------- 1. Topic ----------
+const fieldMap = { "f-title": "title", "f-question": "question", "f-seed": "seed", "f-start": "startYear", "f-end": "endYear", "f-words": "words", "f-tier": "tier", "f-guidance": "guidance" };
+const numeric = new Set(["startYear", "endYear", "words"]);
+const lockable = new Set(["seed", "startYear", "endYear", "question"]);
+Object.entries(fieldMap).forEach(([id, key]) => {
+  $(id).addEventListener("input", e => {
+    let v = e.target.value;
+    if (numeric.has(key)) { v = parseInt(v, 10); if (!Number.isFinite(v)) return; }
+    S[key] = v;
+    if (key === "seed") { const r = nodeById("root"); if (r) r.text = v; }
+    if (S.isExample) { S.isExample = false; S.id = "ex-" + Date.now().toString(36); renderBanner(); }
+    save(); renderDesignSummary(); renderTabs();
+  });
+});
+$("f-count").addEventListener("input", e => {
+  S.targetCount = clamp(parseInt(e.target.value, 10), 8, 20);
+  const sel = selectedExperts();
+  if (sel.length > S.targetCount) sel.slice(S.targetCount).forEach(x => { x.selected = false; });
+  save(); renderDesignSummary(); renderTabs();
+});
+$("f-iter").addEventListener("input", e => { S.iterations = clamp(parseInt(e.target.value, 10), 2, 10); save(); renderDesignSummary(); renderTabs(); });
+document.querySelectorAll('input[name="policy"]').forEach(r => r.addEventListener("change", () => { S.selfPolicy = r.value; save(); }));
+$("f-review").addEventListener("change", e => { S.reviewEach = e.target.checked; if (!S.reviewEach) S.reviewedGen = S.currentGen; save(); renderAll(); });
+
+function renderDesignSummary() {
+  $("o-count").textContent = S.targetCount;
+  $("o-iter").textContent = S.iterations;
+  const y = (S.endYear - S.startYear) / S.iterations;
+  $("design-sum").textContent = `${S.targetCount} personas × ${S.iterations} iterations = ${S.targetCount * S.iterations} contributions. Each iteration covers about ${y >= 1 ? y.toFixed(y % 1 ? 1 : 0) + " year" + (y === 1 ? "" : "s") : Math.round(y * 12) + " months"} (${S.startYear}–${S.endYear}).`;
+}
+function renderTopic() {
+  const lock = started();
+  Object.entries(fieldMap).forEach(([id, key]) => { const el = $(id); if (document.activeElement !== el) el.value = S[key] ?? ""; el.disabled = lock && lockable.has(key); });
+  $("f-count").value = S.targetCount; $("f-count").disabled = lock;
+  $("f-iter").value = S.iterations; $("f-iter").disabled = lock;
+  document.querySelectorAll('input[name="policy"]').forEach(r => { r.checked = r.value === S.selfPolicy; });
+  $("f-review").checked = !!S.reviewEach;
+  renderDesignSummary();
+  $("presets").innerHTML = PRESETS.map(p => `<button class="preset" data-k="${p.key}" ${lock ? "disabled" : ""}><b>${esc(p.title)}</b><span>${esc(p.blurb)}</span></button>`).join("") +
+    `<button class="preset" id="pre-example"><b>Living with Water, 2038</b><span>Open the finished worked example</span></button>`;
+  $("presets").querySelectorAll("[data-k]").forEach(b => b.onclick = () => {
+    const p = PRESETS.find(x => x.key === b.dataset.k);
+    if (S.isExample) S = newExercise(p);
+    else Object.assign(S, { title: p.title, question: p.question, seed: p.seed, startYear: p.startYear, endYear: p.endYear, iterations: p.iterations });
+    const r = nodeById("root"); if (r) r.text = S.seed;
+    save(); renderAll(); toast(`Loaded "${p.title}". Edit anything before you continue.`);
+  });
+  $("pre-example").onclick = () => { switchTo(buildExample()); setTab("tree"); };
+  $("btn-draft").disabled = lock || !sample || !!ui.busy;
+  $("lock-topic").innerHTML = lock ? lockBox() : "";
+  wireRestart();
+  $("topic-next-note").textContent = S.seed && S.question ? "" : "Add a focal question and seed paragraph to continue.";
+  $("go-experts").disabled = !(S.seed && S.question);
+}
+function lockBox() {
+  const armed = ui.armed === "restart";
+  return `<div class="lock-note" style="margin-bottom:14px"><span>This exercise is under way (iteration ${S.currentGen} of ${S.iterations}). The seed, timeline and panel are locked.</span><button class="btn sm danger ${armed ? "armed" : ""}" data-restart>${armed ? "Discard storylines and unlock" : "Start over"}</button></div>`;
+}
+function wireRestart() {
+  document.querySelectorAll("[data-restart]").forEach(b => b.onclick = () => {
+    if (ui.running || ui.busy) return;
+    if (ui.armed !== "restart") { ui.armed = "restart"; renderAll(); return; }
+    ui.armed = null;
+    if (S.isExample) { S = newExercise({ ...S, iterations: S.iterations }); S.experts = buildExample().experts; S.personas = buildExample().personas; }
+    S.nodes = [{ id: "root", parent: null, gen: 0, agent: null, text: S.seed }];
+    S.currentGen = 0; S.reviewedGen = 0; S.evaluation = null; S.agents = []; S.isExample = false; ui.selected = null;
+    save(); renderAll(); toast("Storylines cleared. Settings unlocked.");
+  });
+}
+$("go-experts").onclick = () => setTab("experts");
+$("btn-draft").onclick = async () => {
+  const brief = $("f-brief").value.trim();
+  if (!brief) { $("draft-status").textContent = "Describe the future you want to explore first."; return; }
+  const st = $("draft-status");
+  st.innerHTML = `<span class="spinner"></span> Drafting…`; busy("draft");
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const out = await ask(`Today is ${today}. A user wants to run a participatory scenario exercise (ParEvo method) where expert personas write branching storylines about the future. Their request:\n\n"${brief}"\n\nWrite the exercise setup. The seed paragraph describes the situation at the start year (normally the current year) as concretely and accurately as you can: actors, policies, pressures and open tensions. It must not predict the outcome. If a fact is uncertain, describe it more generally rather than inventing specifics.\n\nReply with only JSON: {"title": "max 6 words", "question": "one-sentence focal question", "seed": "90-140 words", "startYear": number, "endYear": number, "iterations": number between 3 and 6}`, S.tier === "quick" ? "default" : S.tier);
+    if (!out || !out.seed) throw { code: "invalid_json" };
+    S.title = String(out.title || S.title); S.question = String(out.question || ""); S.seed = String(out.seed);
+    if (Number(out.startYear) > 1900) S.startYear = Number(out.startYear);
+    if (Number(out.endYear) > S.startYear) S.endYear = Number(out.endYear);
+    if (Number(out.iterations)) S.iterations = clamp(Number(out.iterations), 2, 10);
+    const r = nodeById("root"); if (r) r.text = S.seed;
+    S.isExample = false; save();
+    st.textContent = "Drafted. Edit the seed paragraph until it says what you want.";
+  } catch (e) { st.textContent = errCopy(e); }
+  finally { busy(null); }
+};
+
+// ---------- 2. Experts ----------
+function expertPrompt(cat, n, exclude) {
+  return `You are helping a user assemble an expert panel for a participatory scenario exercise.
+
+FOCAL QUESTION: ${S.question}
+SEED: ${S.seed}
+
+List ${n} real, influential people whose published work, research, reports or public commentary bears directly on this question. Category: ${CATS[cat].desc}.
+
+Requirements:
+- Only real people you are confident exist and hold, or recently held, the stated affiliation. Prefer people with a substantial public record (books, papers, reports, testimony, interviews, op-eds). If you can't reach ${n} with confidence, return fewer.
+- Prefer leading institutions (top universities, the largest asset managers and financial institutions, well-known think tanks) but include regionally important voices where the question is national or regional.
+- Cover a genuine range of legitimate views on this question: supportive, sceptical, critical and heterodox. Avoid clustering on one side.
+${exclude.length ? `- Do not include: ${exclude.join("; ")}.` : ""}
+
+Reply with only a JSON array: [{"name": "full name", "affiliation": "title, organisation", "stance": "2-4 word stance on this question", "knownFor": "one sentence on their relevant expertise and position", "works": ["up to 3 notable publications, reports or interviews, with year"], "confidence": "high" or "medium"}]`;
+}
+$("btn-find").onclick = async () => {
+  if (!sample || ui.busy || started()) return;
+  ui.stop = false; busy("find");
+  const st = $("find-status");
+  const prog = {}; Object.keys(CATS).filter(c => c !== "other").forEach(c => { prog[c] = "…"; });
+  const show = () => { st.className = "status"; st.innerHTML = `<span class="spinner"></span> Searching Claude's knowledge: ` + Object.entries(prog).map(([c, v]) => `${CATS[c].label} ${v}`).join(" · "); };
+  show();
+  let added = 0, fatal = null;
+  const exclude = S.experts.map(e => e.name);
+  await pool(Object.keys(prog).map(cat => async () => {
+    if (fatal || ui.stop) return;
+    try {
+      const out = await ask(expertPrompt(cat, CATS[cat].n, exclude), S.tier === "quick" ? "default" : S.tier);
+      const have = new Set(S.experts.map(e => normName(e.name)));
+      let k = 0;
+      (Array.isArray(out) ? out : []).forEach(x => {
+        const nm = String(x.name || "").trim(); if (!nm || have.has(normName(nm))) return;
+        have.add(normName(nm));
+        S.experts.push({ id: uid("e"), name: nm.slice(0, 80), affiliation: String(x.affiliation || "").slice(0, 140), category: cat, stance: String(x.stance || "").slice(0, 60), knownFor: String(x.knownFor || "").slice(0, 300), works: (Array.isArray(x.works) ? x.works : []).slice(0, 3).map(w => String(w).slice(0, 160)), confidence: x.confidence === "high" ? "high" : "medium", selected: false });
+        k++;
+      });
+      added += k; prog[cat] = `✓ ${k}`;
+    } catch (e) { prog[cat] = "failed"; if (e && FATAL.has(e.code)) { fatal = e; stopAll(); } }
+    S.isExample = false; save(); show(); renderExperts();
+  }), 3);
+  st.className = fatal ? "status err" : "status";
+  st.textContent = fatal ? errCopy(fatal) : `Found ${added} experts. ${S.experts.length} in the pool. Pick ${S.targetCount} for your panel, or use Auto-pick.`;
+  busy(null);
+};
+$("btn-autopick").onclick = () => {
+  if (started()) return;
+  S.experts.forEach(e => { e.selected = false; });
+  const byCat = {};
+  S.experts.forEach(e => { (byCat[e.category] = byCat[e.category] || []).push(e); });
+  Object.values(byCat).forEach(list => {   // within a category, spread across stances, high confidence first
+    const seen = new Map();
+    list.sort((a, b) => (a.confidence === "high" ? 0 : 1) - (b.confidence === "high" ? 0 : 1));
+    list.forEach(e => { const k = (e.stance || "").toLowerCase(); seen.set(k, (seen.get(k) || 0) + 1); e._r = seen.get(k); });
+    list.sort((a, b) => a._r - b._r);
+  });
+  const queues = Object.keys(byCat).sort((a, b) => (a === "other") - (b === "other")).map(k => byCat[k].slice());
+  let picked = 0;
+  while (picked < S.targetCount && queues.some(q => q.length)) {
+    for (const q of queues) { if (picked >= S.targetCount) break; const e = q.shift(); if (e) { e.selected = true; picked++; } }
+  }
+  S.experts.forEach(e => delete e._r);
+  save(); renderAll(); toast(`Picked ${picked} experts across ${queues.length} ${queues.length === 1 ? "category" : "categories"}.`);
+};
+$("btn-add-expert").onclick = () => {
+  const name = $("ae-name").value.trim(); if (!name || started()) return;
+  if (S.experts.some(e => normName(e.name) === normName(name))) { toast("That person is already in the pool."); return; }
+  const canSelect = selectedExperts().length < S.targetCount;
+  S.experts.push({ id: uid("e"), name: name.slice(0, 80), affiliation: $("ae-aff").value.trim().slice(0, 140), category: "other", stance: "", knownFor: "", works: [], confidence: "user", selected: canSelect });
+  $("ae-name").value = ""; $("ae-aff").value = "";
+  S.isExample = false; save(); renderAll();
+  toast(canSelect ? `Added ${name} to your panel.` : `Added ${name} to the pool. Your panel is full, so deselect someone to include them.`);
+};
+function toggleExpert(id) {
+  if (started()) return;
+  const e = S.experts.find(x => x.id === id); if (!e) return;
+  if (!e.selected && selectedExperts().length >= S.targetCount) { toast(`Your panel already has ${S.targetCount}. Deselect someone, or raise the panel size on the Topic tab.`); return; }
+  e.selected = !e.selected; save(); renderExperts(); renderTabs();
+}
+function renderExperts() {
+  const lock = started();
+  $("btn-find").disabled = !sample || !!ui.busy || lock || !S.question;
+  $("btn-find").textContent = S.experts.length ? "Find more experts" : "Find 50+ experts";
+  $("btn-autopick").disabled = lock || !S.experts.length;
+  $("btn-add-expert").disabled = lock;
+  $("lock-experts").innerHTML = lock ? `<div class="lock-note" style="margin:10px 0">The panel is locked while the exercise is under way.</div>` : "";
+  const counts = { all: S.experts.length, selected: selectedExperts().length };
+  S.experts.forEach(e => { counts[e.category] = (counts[e.category] || 0) + 1; });
+  const fl = [["all", "All"], ["selected", "On your panel"], ...Object.keys(CATS).filter(c => counts[c]).map(c => [c, CATS[c].label])];
+  $("filters").innerHTML = fl.map(([k, l]) => `<button class="chip" data-f="${k}" aria-pressed="${ui.catFilter === k}">${esc(l)} <span class="c">${k === "selected" ? `${counts.selected}/${S.targetCount}` : counts[k] || 0}</span></button>`).join("") +
+    `<input type="search" id="x-search" placeholder="Search names, stances, institutions" value="${esc(ui.search)}" aria-label="Search experts">`;
+  $("filters").querySelectorAll("[data-f]").forEach(b => b.onclick = () => { ui.catFilter = b.dataset.f; renderExperts(); });
+  const sx = $("x-search"); sx.oninput = () => { ui.search = sx.value; renderExpertGrid(); };
+  renderExpertGrid();
+  const sel = counts.selected;
+  $("experts-next-note").textContent = sel === S.targetCount ? `Panel complete: ${sel} experts.` : `${sel} of ${S.targetCount} selected.`;
+  $("go-personas").disabled = sel === 0;
+}
+function renderExpertGrid() {
+  const q = ui.search.trim().toLowerCase();
+  const list = S.experts.filter(e => (ui.catFilter === "all" || (ui.catFilter === "selected" ? e.selected : e.category === ui.catFilter)) &&
+    (!q || [e.name, e.affiliation, e.stance, e.knownFor].join(" ").toLowerCase().includes(q)));
+  const g = $("expert-grid");
+  if (!S.experts.length) {
+    g.innerHTML = `<div class="placeholder" style="grid-column:1/-1"><h3>No experts yet</h3><p>${sample ? "Press Find 50+ experts. Claude will propose academics, investors and policy voices for your focal question. This takes about a minute." : "Open this page in Claude to search for experts, or add people by name below."}</p></div>`;
+    return;
+  }
+  if (!list.length) { g.innerHTML = `<div class="muted" style="grid-column:1/-1;padding:16px">No experts match this filter.</div>`; return; }
+  const lock = started();
+  g.innerHTML = list.map(e => `<div class="expert ${e.selected ? "on" : ""} ${lock ? "locked" : ""}" data-id="${e.id}">
+    <div class="hd"><input type="checkbox" ${e.selected ? "checked" : ""} ${lock ? "disabled" : ""} aria-label="Include ${esc(e.name)}"><div style="min-width:0"><div class="nm">${esc(e.name)}</div><div class="af">${esc(e.affiliation)}</div></div></div>
+    <div class="tags"><span class="tag ${e.category}">${esc(CATS[e.category]?.label || "Other")}</span>${e.stance ? `<span class="tag">${esc(e.stance)}</span>` : ""}${e.confidence === "medium" ? `<span class="tag warn">verify</span>` : ""}${e.fictional ? `<span class="tag">fictional</span>` : ""}</div>
+    ${e.knownFor ? `<div class="kf">${esc(e.knownFor)}</div>` : ""}
+    ${e.works?.length ? `<div class="works">${e.works.map(esc).join(" · ")}</div>` : ""}
+  </div>`).join("");
+  g.querySelectorAll(".expert").forEach(c => c.addEventListener("click", ev => { ev.preventDefault(); toggleExpert(c.dataset.id); }));
+}
+$("go-personas").onclick = () => setTab("personas");
+
+// ---------- 3. Personas ----------
+function personaPrompt(group) {
+  return `You are building simulation personas for a participatory scenario exercise. Each persona must reflect the person's publicly known views as expressed in their published work, reports, speeches and interviews, as accurately and conservatively as you can. Where you are unsure of their view on something, say "uncertain" rather than inventing it. Never invent quotations.
+
+FOCAL QUESTION: ${S.question}
+SEED: ${S.seed}
+
+EXPERTS:
+${group.map(e => {
+  const p = S.personas[e.id] || {};
+  return `- ${e.id} | ${e.name}, ${e.affiliation}${e.knownFor ? `. Known for: ${e.knownFor}` : ""}${p.userSources ? `\n  USER-PROVIDED SOURCE EXCERPTS (base the persona primarily on these):\n  <<<\n${p.userSources.slice(0, 12000)}\n  >>>` : ""}`;
+}).join("\n")}
+
+Reply with only a JSON array, one object per expert:
+[{"id": "<expert id>",
+  "brief": "100-130 words, third person: worldview, analytical lens, and how they are likely to see this specific question",
+  "beliefs": ["3-5 core beliefs that shape their analysis"],
+  "positions": ["2-4 positions they have taken that bear on this question; mark uncertain ones"],
+  "sources": [{"title": "publication, report, speech or interview", "year": "year or approx.", "type": "book|paper|report|speech|interview|op-ed|testimony"}],
+  "style": "one sentence on how they reason and argue",
+  "blindSpots": "one sentence on what they tend to underweight"}]`;
+}
+async function buildPersonas(ids) {
+  if (!sample || ui.busy) return;
+  const targets = ids.map(id => S.experts.find(e => e.id === id)).filter(Boolean);
+  if (!targets.length) return;
+  ui.stop = false; busy("build");
+  const st = $("build-status"); let done = 0, fatal = null;
+  const show = () => { st.className = "status"; st.innerHTML = `<span class="spinner"></span> Building personas: ${done} of ${targets.length} done…`; };
+  show();
+  await pool(chunk(targets, 4).map(group => async () => {
+    if (fatal || ui.stop) return;
+    try {
+      const out = await ask(personaPrompt(group));
+      (Array.isArray(out) ? out : []).forEach(x => {
+        const e = group.find(g => g.id === String(x.id || "").trim()); if (!e) return;
+        const prev = S.personas[e.id] || {};
+        S.personas[e.id] = { brief: String(x.brief || ""), beliefs: (x.beliefs || []).map(String).slice(0, 6), positions: (x.positions || []).map(String).slice(0, 5),
+          sources: (x.sources || []).slice(0, 6).map(s => ({ title: String(s.title || s), year: String(s.year || ""), type: String(s.type || "") })),
+          style: String(x.style || ""), blindSpots: String(x.blindSpots || ""), grounded: !!prev.userSources, userSources: prev.userSources || "" };
+        done++;
+      });
+    } catch (e) { if (e && FATAL.has(e.code)) { fatal = e; stopAll(); } }
+    save(); show(); renderPersonas();
+  }), 2);
+  st.className = fatal ? "status err" : "status";
+  st.textContent = fatal ? errCopy(fatal) : done < targets.length ? `Built ${done} of ${targets.length}. Press Build personas again to retry the rest.` : `Built ${done} persona${done === 1 ? "" : "s"}. Read them, edit any brief, or add sources to ground them.`;
+  busy(null);
+}
+$("btn-build").onclick = () => buildPersonas(selectedExperts().filter(e => !S.personas[e.id]?.brief).map(e => e.id));
+function renderPersonas() {
+  const lock = started();
+  const sel = lock ? S.agents.map(a => S.experts.find(e => e.id === a.id) || { id: a.id, name: a.name, affiliation: a.role, category: "other" }) : selectedExperts();
+  const missing = sel.filter(e => !S.personas[e.id]?.brief).length;
+  $("btn-build").disabled = !sample || !!ui.busy || lock || !missing;
+  $("btn-build").textContent = missing ? `Build ${missing} persona${missing === 1 ? "" : "s"}` : "All personas built";
+  const g = $("persona-grid");
+  if (!sel.length) { g.innerHTML = `<div class="placeholder" style="grid-column:1/-1"><h3>No panel yet</h3><p>Choose experts on the Experts tab first.</p><button class="btn" id="pp-go">Go to experts</button></div>`; $("pp-go").onclick = () => setTab("experts"); }
+  else g.innerHTML = sel.map((e, i) => {
+    const p = S.personas[e.id];
+    const hue = lock ? hueOf(e.id) : Math.round((i * 137.508 + 205) % 360);
+    const status = !p?.brief ? `<span class="tag warn">not built</span>` : p.grounded ? `<span class="tag alive">grounded in your sources</span>` : e.fictional ? `<span class="tag">fictional</span>` : `<span class="tag">from public record · verify</span>`;
+    return `<article class="persona" data-id="${e.id}">
+      <div class="hd"><div class="who" style="--h:${hue}"><span class="dot"></span><div style="min-width:0"><b>${esc(e.name)}</b><div class="muted small">${esc(e.affiliation)}</div></div></div>${status}</div>
+      ${p?.brief ? `<p class="brief">${esc(p.brief)}</p>
+        ${p.positions?.length ? `<div><div class="lbl">Positions on this question</div><ul>${p.positions.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${p.beliefs?.length ? `<div><div class="lbl">Core beliefs</div><ul>${p.beliefs.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : ""}
+        ${p.style || p.blindSpots ? `<div class="small">${p.style ? `<b>Style:</b> ${esc(p.style)} ` : ""}${p.blindSpots ? `<b>Blind spot:</b> ${esc(p.blindSpots)}` : ""}</div>` : ""}
+        ${p.sources?.length ? `<div><div class="lbl">Public record drawn on</div><ul class="muted">${p.sources.map(s => `<li><i>${esc(s.title)}</i>${s.year ? ` (${esc(s.year)})` : ""}${s.type ? ` · ${esc(s.type)}` : ""}</li>`).join("")}</ul></div>` : ""}`
+        : `<p class="muted small">${esc(e.knownFor || "No persona yet.")}</p>`}
+      ${lock ? "" : `<details><summary>Edit brief or add sources</summary><div class="body">
+        <div class="field"><label for="pb-${e.id}">Persona brief (used in every prompt)</label><textarea id="pb-${e.id}" rows="5">${esc(p?.brief || "")}</textarea></div>
+        <div class="field"><label for="ps-${e.id}">Source excerpts: published work, interviews, speeches</label><textarea id="ps-${e.id}" rows="4" placeholder="Paste passages here, with titles and dates if you have them.">${esc(p?.userSources || "")}</textarea>
+          <span class="hint">Or load text files: <input type="file" id="pf-${e.id}" accept=".txt,.md,text/plain,text/markdown" multiple></span></div>
+        <div class="toolbar"><button class="btn sm" data-rebuild="${e.id}" ${!sample || ui.busy ? "disabled" : ""}>${p?.userSources ? "Rebuild from these sources" : "Rebuild persona"}</button></div>
+      </div></details>`}
+    </article>`;
+  }).join("");
+  g.querySelectorAll("article.persona").forEach(a => {
+    const id = a.dataset.id;
+    const pb = a.querySelector(`#pb-${id}`), ps = a.querySelector(`#ps-${id}`), pf = a.querySelector(`#pf-${id}`);
+    const ensure = () => (S.personas[id] = S.personas[id] || { brief: "", beliefs: [], positions: [], sources: [], style: "", blindSpots: "", grounded: false, userSources: "" });
+    if (pb) pb.addEventListener("input", () => { ensure().brief = pb.value; save(); });
+    if (ps) ps.addEventListener("input", () => { ensure().userSources = ps.value.slice(0, 20000); save(); });
+    if (pf) pf.addEventListener("change", async () => {
+      const texts = await Promise.all([...pf.files].map(f => f.text().then(t => `[${f.name}]\n${t}`)));
+      const p = ensure(); p.userSources = ((p.userSources ? p.userSources + "\n\n" : "") + texts.join("\n\n")).slice(0, 20000);
+      ps.value = p.userSources; save(); toast(`Loaded ${texts.length} file${texts.length === 1 ? "" : "s"}.`);
+    });
+    const rb = a.querySelector("[data-rebuild]"); if (rb) rb.onclick = () => buildPersonas([id]);
+  });
+  const ready = sel.length && !missing;
+  $("btn-start").disabled = lock || !ready || sel.length < 8 || !!ui.busy || !sample;
+  $("btn-start").textContent = lock ? "Exercise under way" : "Start the exercise";
+  $("personas-next-note").textContent = lock ? "" : sel.length < 8 ? `The panel needs at least 8 experts (you have ${sel.length}).` : sel.length !== S.targetCount ? `${sel.length} experts selected (target ${S.targetCount}). You can start with this panel.` : missing ? `${missing} persona${missing === 1 ? "" : "s"} still to build.` : `Ready: ${sel.length} personas, ${S.iterations} iterations.`;
+}
+$("btn-start").onclick = () => {
+  if (started()) return;
+  S.agents = selectedExperts().map(e => ({ id: e.id, name: e.name, role: e.affiliation, lens: e.knownFor || "" }));
+  S.nodes = [{ id: "root", parent: null, gen: 0, agent: null, text: S.seed }];
+  S.currentGen = 0; S.reviewedGen = 0; S.evaluation = null; S.isExample = false; ui.selected = null;
+  save(); setTab("tree"); runIterations(1);
+};
+
+// ---------- 4. Storylines: running ----------
+function personaBlock(a, forbidden, onceLeft) {
+  const p = S.personas[a.id] || {};
+  return `- ${a.id} | ${a.name}, ${a.role} (simulated perspective)
+  Worldview: ${p.brief || a.lens}
+  ${p.positions?.length ? `Positions: ${p.positions.join("; ")}\n  ` : ""}${p.style ? `Reasoning style: ${p.style}\n  ` : ""}${forbidden.length ? `NOT ALLOWED to extend: ${forbidden.join(", ")} (they wrote its latest paragraph)` : onceLeft.length ? `May extend own latest paragraph (${onceLeft.join(", ")}) only once in the whole exercise; prefer building on others' work` : ""}`;
+}
+function selfExtensions(aid) { return S.nodes.filter(n => n.agent === aid && n.gen >= 2 && !n.rejected && nodeById(n.parent)?.agent === aid).length; }
+function constraintsFor(aid, tipLabels) {
+  const tips = Object.keys(tipLabels);
+  const own = tips.filter(id => nodeById(id).agent === aid);
+  if (!own.length || S.selfPolicy === "free" || own.length === tips.length) return { forbidden: [], once: [] };
+  if (S.selfPolicy === "once" && selfExtensions(aid) === 0) return { forbidden: [], once: own.map(id => tipLabels[id]) };
+  return { forbidden: own.map(id => tipLabels[id]), once: [] };
+}
+function iterationPrompt(gen, tipLabels, group, strict) {
+  const tips = Object.keys(tipLabels);
+  const stories = tips.map(id => `[${tipLabels[id]}]\n${storyText(id)}`).join("\n\n---\n\n");
+  const first = gen === 1;
+  return `You are simulating independent expert participants in a ParEvo participatory scenario exercise. Participants take turns extending branching storylines about the future. Contributions are anonymous: nobody knows who wrote which paragraph, except their own.
+
+Each participant is a SIMULATED PERSPECTIVE based on a real or fictional person's public record. Write as their analysis would lead them to, but never quote them, never put words in their mouth, and never mention them or their organisation in the story.
+
+FOCAL QUESTION: ${S.question}
+TIME FRAME: ${S.startYear} to ${S.endYear}, in ${S.iterations} iterations. This is iteration ${gen} of ${S.iterations}. New paragraphs describe developments in roughly ${periodOf(gen)}.${S.guidance ? `\nFACILITATOR GUIDANCE: ${S.guidance}` : ""}
+
+${first ? "SEED (every participant extends this):" : "SURVIVING STORYLINES (each shows the full text from the seed to its latest paragraph):"}
+${stories}
+
+PARTICIPANTS (write one contribution for each, independently):
+${group.map(a => { const c = constraintsFor(a.id, tipLabels); return personaBlock(a, c.forbidden, c.once); }).join("\n")}
+
+RULES
+- ${first ? `Every participant extends ${tipLabels[tips[0]]}.` : "Each participant chooses exactly ONE storyline to extend: the one they find most plausible, consequential or worth developing from their perspective. Choices must follow each participant's genuine view; do not spread them artificially, and do not all pick the same one."}
+- Respect every NOT ALLOWED constraint above.${strict ? " THIS IS A RETRY: the previous answer broke that constraint. Choose a different storyline." : ""}
+- Write about ${S.words} words that continue the chosen storyline directly, as narrative (not commentary), consistent with what it already says.
+- Include at least one concrete event, actor, place or number. Let the participant's lens shape what happens.
+- Avoid repeating developments already in the storyline.${gen === S.iterations ? "\n- This is the final iteration: bring the storyline to its state at the end of the time frame (it need not be resolved)." : ""}
+
+Reply with only a JSON array, one object per participant:
+[{"agent": "<participant id>", "extends": "<storyline label, e.g. ${tipLabels[tips[0]]}>", "text": "<the contribution>", "why": "<one short sentence: why this participant chose this storyline>"}]`;
+}
+
+async function runIterations(count) {
+  if (ui.running || !sample) return;
+  ui.running = true; ui.stop = false; renderAll();
+  const st = $("run-status"); let done = 0;
+  try {
+    while (done < count && S.currentGen < S.iterations && !ui.stop && !pendingReview()) {
+      const ok = await runOne(st);
+      if (!ok) break;
+      done++;
+    }
+    if (!ui.stop && done > 0) {
+      st.className = "status";
+      if (pendingReview()) st.textContent = `Iteration ${S.currentGen} is ready for your review. Edit or reject contributions, then approve to continue.`;
+      else if (S.currentGen >= S.iterations) st.textContent = `All ${S.iterations} iterations complete. ${liveTips().length} storylines survived and ${extinctLeaves().length} went extinct.`;
+    }
+  } finally { ui.running = false; save(); renderAll(); }
+}
+
+async function runOne(st) {
+  const gen = S.currentGen + 1;
+  const tipLabels = labelMap();
+  const labelToId = Object.fromEntries(Object.entries(tipLabels).map(([id, l]) => [l, id]));
+  const tipIds = Object.keys(tipLabels);
+  let received = 0, fatal = null, dropped = 0;
+  st.className = "status";
+  const progress = () => { st.innerHTML = `<span class="spinner"></span> Iteration ${gen} of ${S.iterations} (${periodOf(gen)}): ${received} of ${S.agents.length} personas have written…`; };
+  progress();
+
+  const htext = $("h-text").value.trim();
+  if (htext) {
+    const pid = tipIds.includes($("h-target").value) ? $("h-target").value : tipIds[0];
+    S.nodes.push({ id: uid(), parent: pid, gen, agent: "you", text: htext, why: "", from: tipLabels[pid] });
+    $("h-text").value = ""; $("human-box").open = false;
+  }
+
+  const accept = (group, arr, violators) => {
+    const seen = new Set();
+    (Array.isArray(arr) ? arr : []).forEach(c => {
+      const a = group.find(g => g.id === String(c.agent || "").trim());
+      if (!a || seen.has(a.id) || !c.text) return;
+      let lab = String(c.extends || "").trim().toUpperCase();
+      if (!labelToId[lab]) lab = tipLabels[tipIds[0]];
+      const cons = constraintsFor(a.id, tipLabels);
+      if (cons.forbidden.includes(lab)) { if (violators) violators.push(a); return; }
+      seen.add(a.id);
+      S.nodes.push({ id: uid(), parent: labelToId[lab], gen, agent: a.id, text: String(c.text).trim(), why: String(c.why || "").trim(), from: lab });
+    });
+    return seen;
+  };
+
+  const violators = [];
+  await pool(chunk(S.agents, 4).map(group => async () => {
+    if (ui.stop || fatal) return;
+    try { received += accept(group, await ask(iterationPrompt(gen, tipLabels, group, false)), violators).size; }
+    catch (e) { if (e && e.code !== "cancelled" && FATAL.has(e.code)) { fatal = e; stopAll(); } }
+    finally { progress(); renderTree(); renderStats(); }
+  }), 2);
+
+  if (violators.length && !ui.stop && !fatal) {
+    st.innerHTML = `<span class="spinner"></span> ${violators.length} persona${violators.length > 1 ? "s" : ""} chose their own storyline against the rules. Asking again…`;
+    try { const ok = accept(violators, await ask(iterationPrompt(gen, tipLabels, violators, true)), null); received += ok.size; dropped = violators.length - ok.size; }
+    catch (e) { dropped = violators.length; if (e && FATAL.has(e.code)) fatal = e; }
+  }
+
+  const added = S.nodes.filter(n => n.gen === gen).length;
+  if (fatal || ui.stop || added === 0) {
+    S.nodes = S.nodes.filter(n => n.gen !== gen);
+    st.className = "status err";
+    st.textContent = fatal ? errCopy(fatal) : ui.stop ? `Stopped. Iteration ${gen} was discarded; run it again when ready.` : "No contributions came back. Try running the iteration again.";
+    renderAll(); return false;
+  }
+  S.currentGen = gen;
+  if (!S.reviewEach) S.reviewedGen = gen;
+  ui.selected = liveTips()[0]?.id || null;
+  const missing = S.agents.length - S.nodes.filter(n => n.gen === gen && n.agent !== "you").length;
+  st.className = "status";
+  st.textContent = `Iteration ${gen}: ${added} contributions.` + (missing ? ` ${missing} persona${missing > 1 ? "s" : ""} didn't contribute${dropped ? ` (${dropped} kept choosing their own storyline)` : ""}.` : "");
+  save(); renderAll();
+  return true;
+}
+$("btn-run").onclick = () => runIterations(1);
+$("btn-run-all").onclick = () => runIterations(S.iterations - S.currentGen);
+$("btn-stop").onclick = stopAll;
+$("btn-eval-stop").onclick = stopAll;
+$("t-authors").addEventListener("change", e => { ui.showAuthors = e.target.checked; renderLegend(); renderTree(); renderReader(); });
+
+// ---------- 4b. Review ----------
+function renderReview() {
+  const box = $("review");
+  if (!pendingReview() || ui.running) { box.innerHTML = ""; return; }
+  const gen = S.currentGen;
+  const items = treeOrder().filter(n => n.gen === gen);
+  const kept = items.filter(n => !n.rejected).length;
+  const own = items.filter(n => !n.rejected && n.agent !== "you" && nodeById(n.parent)?.agent === n.agent).length;
+  const prevLabels = {}; treeOrder().filter(n => n.gen === gen - 1 && !n.rejected).forEach((n, i) => { prevLabels[n.id] = gen === 1 ? "Seed" : "S" + (i + 1); });
+  const armed = ui.armed === "rerun";
+  box.innerHTML = `<div class="review">
+    <div class="review-head"><div><div class="eyebrow">Your review · iteration ${gen} of ${S.iterations} · ${periodOf(gen)}</div><h3 style="margin-top:2px">Check the new contributions before the next round</h3>
+      <div class="muted small" style="margin-top:4px">${kept} kept of ${items.length}. ${own ? `${own} extend${own === 1 ? "s" : ""} the persona's own previous paragraph.` : "No persona extended its own paragraph."} Edits change the text the panel sees next round. Rejected contributions are removed when you approve.</div></div>
+      <div class="toolbar"><button class="btn sm danger ${armed ? "armed" : ""}" id="rv-rerun">${armed ? "Confirm: discard and re-run" : "Discard and re-run"}</button><button class="btn primary" id="rv-approve" ${kept ? "" : "disabled"}>Approve iteration ${gen}</button></div></div>
+    <div class="review-list">${items.map(n => {
+      const a = agentById(n.agent); const par = nodeById(n.parent);
+      const ownExt = n.agent !== "you" && par?.agent === n.agent;
+      return `<div class="rcard ${n.rejected ? "rejected" : ""}" style="--h:${hueOf(n.agent)}" data-id="${n.id}">
+        <div class="meta"><b>${esc(a?.name || "?")}</b><span>continues ${esc(prevLabels[n.parent] || n.from || "?")}</span>${ownExt ? `<span class="tag warn">own branch</span>` : ""}${n.edited ? `<span class="tag">edited</span>` : ""}</div>
+        <div class="prev">…${esc((par?.text || "").slice(-140))}</div>
+        <textarea aria-label="Contribution by ${esc(a?.name || "")}" ${n.rejected ? "disabled" : ""}>${esc(n.text)}</textarea>
+        ${n.why ? `<div class="muted small"><i>Why: ${esc(n.why)}</i></div>` : ""}
+        <div class="acts"><button class="btn sm" data-show="${n.id}">Show in network</button><button class="btn sm ${n.rejected ? "" : "danger"}" data-rej="${n.id}">${n.rejected ? "Restore" : "Reject"}</button></div>
+      </div>`; }).join("")}</div></div>`;
+  box.querySelectorAll(".rcard").forEach(c => {
+    const n = nodeById(c.dataset.id);
+    c.querySelector("textarea").addEventListener("input", e => { n.text = e.target.value; n.edited = true; save(); });
+    c.querySelector("[data-rej]").onclick = () => { n.rejected = !n.rejected; save(); renderReview(); renderTree(); renderReader(); renderStats(); };
+    c.querySelector("[data-show]").onclick = () => { ui.selected = n.id; renderTree(); renderReader(); $("tree").scrollIntoView({ behavior: "smooth", block: "start" }); };
+  });
+  $("rv-approve").onclick = () => {
+    S.nodes = S.nodes.filter(n => !(n.gen === gen && n.rejected));
+    S.reviewedGen = gen; ui.armed = null;
+    if (!liveTips().some(t => t.id === ui.selected)) ui.selected = liveTips()[0]?.id || null;
+    save(); renderAll();
+    $("run-status").className = "status";
+    $("run-status").textContent = S.currentGen >= S.iterations ? `Iteration ${gen} approved. All iterations complete. See which futures survived, then run the evaluation.` : `Iteration ${gen} approved. Run iteration ${gen + 1} when ready.`;
+  };
+  $("rv-rerun").onclick = () => {
+    if (ui.armed !== "rerun") { ui.armed = "rerun"; renderReview(); return; }
+    ui.armed = null;
+    S.nodes = S.nodes.filter(n => n.gen !== gen);
+    S.currentGen = gen - 1; S.reviewedGen = gen - 1; ui.selected = null;
+    save(); runIterations(1);
+  };
+}
+
+// ---------- 4c. Stats, legend, tree, reader ----------
+function computeStats() {
+  const contribs = S.nodes.filter(n => n.gen > 0 && !n.rejected);
+  const tips = S.currentGen > 0 ? liveTips() : [];
+  const lineages = new Set(tips.map(t => pathTo(t.id)[1]?.id));
+  const later = contribs.filter(n => n.gen >= 2 && n.agent !== "you");
+  const own = later.filter(n => nodeById(n.parent)?.agent === n.agent).length;
+  const authors = tips.map(t => authorsOf(t.id).length);
+  return { tips: tips.length, lineages: lineages.size, dead: extinctLeaves().length, ownRate: later.length ? own / later.length : null, authors: authors.length ? mean(authors) : null };
+}
+function renderStats() {
+  const s = computeStats();
+  $("stats").innerHTML = [
+    [`${S.currentGen}/${S.iterations}`, "iterations complete"],
+    [s.tips || "–", "surviving storylines"],
+    [s.dead, "extinct storylines"],
+    [s.lineages || "–", "lineages from iteration 1 still alive"],
+    [s.ownRate == null ? "–" : Math.round(s.ownRate * 100) + "%", "contributions extending own branch"],
+    [s.authors == null ? "–" : s.authors.toFixed(1), "authors per surviving storyline"]
+  ].map(([b, l]) => `<div class="stat"><b>${b}</b><span>${l}</span></div>`).join("");
+}
+function renderLegend() {
+  const el = $("legend");
+  if (!ui.showAuthors || !S.agents.length) { el.innerHTML = ""; return; }
+  const ids = S.agents.map(a => a.id).concat(S.nodes.some(n => n.agent === "you") ? ["you"] : []);
+  el.innerHTML = ids.map(id => { const a = agentById(id);
+    return `<button class="chip" style="--h:${hueOf(id)}" data-id="${id}" aria-pressed="${ui.highlight === id}" title="${esc(a.role)}"><span class="dot ${id === "you" ? "human" : ""}"></span>${esc(a.name)}</button>`; }).join("");
+  el.querySelectorAll(".chip").forEach(c => c.onclick = () => { ui.highlight = ui.highlight === c.dataset.id ? null : c.dataset.id; renderLegend(); renderTree(); });
+}
+function renderTree() {
+  const box = $("tree");
+  if (!started()) { box.innerHTML = `<div class="empty">No storylines yet. Set the topic, choose your experts and build their personas, then start the exercise.</div>`; return; }
+  let row = 0; const pos = {};
+  const place = n => { const kids = allChildren(n.id); if (!kids.length) pos[n.id] = row++; else { kids.forEach(place); pos[n.id] = (pos[kids[0].id] + pos[kids[kids.length - 1].id]) / 2; } };
+  place(nodeById("root"));
+  const order = treeOrder();
+  const colW = 150, rowH = 28, left = 26, top = 40, cols = S.iterations;
+  const W = left + cols * colW + 80, H = top + Math.max(row, 1) * rowH + 14;
+  const X = g => left + g * colW, Y = id => top + pos[id] * rowH + rowH / 2;
+  const labels = labelMap(), dlabels = extinctLabels();
+  const sel = ui.selected && nodeById(ui.selected) ? ui.selected : null;
+  const onPath = new Set(sel ? pathTo(sel).map(n => n.id) : []);
+  const aliveSet = new Set(); (S.currentGen > 0 ? liveTips() : []).forEach(t => pathTo(t.id).forEach(p => aliveSet.add(p.id)));
+  S.nodes.filter(n => n.gen > S.currentGen).forEach(n => pathTo(n.id).forEach(p => aliveSet.add(p.id)));
+  let svg = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Storyline network">`;
+  for (let g = 0; g <= cols; g++) {
+    const future = g > S.currentGen && !(ui.running && g === S.currentGen + 1);
+    if (g > 0) svg += `<rect class="collane ${future ? "future" : ""}" x="${X(g) - colW / 2 + 8}" y="${top - 6}" width="${colW - 16}" height="${H - top}" rx="4" opacity="${future ? 1 : 0.55}"/>`;
+    svg += `<text class="colhead" x="${X(g)}" y="13" text-anchor="middle">${g === 0 ? "SEED" : "ITERATION " + g}</text><text class="colyear" x="${X(g)}" y="31" text-anchor="middle">${periodOf(g)}</text>`;
+  }
+  order.forEach(n => { if (n.parent && pos[n.parent] != null) {
+    const px = X(n.gen - 1), py = Y(n.parent), x = X(n.gen), y = Y(n.id);
+    const deadLine = !aliveSet.has(n.id);
+    const stroke = n.agent && n.agent !== "you" ? `style="stroke:hsl(${hueOf(n.agent)} var(--agent-s) var(--agent-l))"` : "";
+    svg += `<path class="edge ${onPath.has(n.id) ? "on" : ""} ${n.rejected ? "rej" : ""} ${deadLine ? "dead" : ""}" ${stroke} d="M${px} ${py} C${px + colW / 2} ${py}, ${x - colW / 2} ${y}, ${x} ${y}"/>`;
+  }});
+  order.forEach(n => {
+    const x = X(n.gen), y = Y(n.id);
+    const dead = isDead(n), alive = !!labels[n.id] && n.gen > 0;
+    const dim = ui.highlight && n.agent !== ui.highlight && n.gen > 0;
+    const cls = ["node", n.gen === 0 ? "root" : "", dead ? "dead" : "", alive ? "alive" : "", n.rejected ? "rej" : "", n.id === sel ? "sel" : "", dim ? "dim" : ""].join(" ");
+    const a = n.agent ? agentById(n.agent) : null;
+    const fill = n.gen === 0 ? "" : n.agent === "you" ? `style="fill:var(--ink)"` : `style="fill:hsl(${hueOf(n.agent)} var(--agent-s) var(--agent-l))"`;
+    const tip = (a ? (ui.showAuthors ? a.name + ": " : "") : "Seed: ") + n.text.slice(0, 140) + (n.text.length > 140 ? "…" : "");
+    if (alive && !dim) svg += `<circle class="halo" cx="${x}" cy="${y}" r="12"/>`;
+    svg += `<circle class="${cls}" ${fill} cx="${x}" cy="${y}" r="${n.gen === 0 ? 9 : alive ? 7.5 : 6.5}" data-id="${n.id}" tabindex="0" role="button" aria-label="${esc(tip)}"><title>${esc(tip)}</title></circle>`;
+    if (alive) svg += `<text class="tip-label" x="${x + 12}" y="${y + 4}">${labels[n.id]}</text>`;
+    else if (dead) svg += `<text class="dead-label" x="${x + 11}" y="${y + 4}">${dlabels[n.id]} ✕</text>`;
+  });
+  box.innerHTML = svg + `</svg>`;
+  box.querySelectorAll("circle.node").forEach(c => {
+    const pick = () => { ui.selected = c.dataset.id; renderTree(); renderReader(); };
+    c.addEventListener("click", pick);
+    c.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); pick(); } });
+  });
+}
+function statusTag(n) {
+  const labels = labelMap(), dl = extinctLabels();
+  if (n.gen === 0) return "";
+  if (n.rejected) return `<span class="tag dead">rejected in review</span>`;
+  if (labels[n.id]) return `<span class="tag alive">${labels[n.id]} · survived to ${endYearOf(n.gen)}</span>`;
+  if (isDead(n)) return `<span class="tag dead">${dl[n.id]} · extinct after iteration ${n.gen}</span>`;
+  if (n.gen > S.currentGen) return `<span class="tag">being written</span>`;
+  return `<span class="tag">continued by ${childrenOf(n.id).length}</span>`;
+}
+function renderReader() {
+  const el = $("reader");
+  const id = ui.selected && nodeById(ui.selected) ? ui.selected : (liveTips()[0]?.id || "root");
+  const n = nodeById(id);
+  if (!n || !started()) { el.innerHTML = `<div class="eyebrow">Seed · ${S.startYear}</div><p style="font-family:var(--f-display);font-size:16px">${esc(S.seed || "No seed paragraph yet.")}</p>`; return; }
+  const labels = labelMap(), dl = extinctLabels();
+  const syn = S.evaluation?.synthesis?.storylines?.[id];
+  const title = n.gen === 0 ? "Seed" : syn?.title || (labels[id] ? `Storyline ${labels[id]}` : dl[id] ? `Extinct storyline ${dl[id]}` : `Branch at iteration ${n.gen}`);
+  const authors = authorsOf(id);
+  el.innerHTML = `<div class="reader-head"><div><div class="eyebrow">${S.startYear} → ${endYearOf(n.gen)} · ${authors.length} author${authors.length === 1 ? "" : "s"}</div><div class="title">${esc(title)}</div>${syn?.summary ? `<div class="muted" style="margin-top:2px">${esc(syn.summary)}</div>` : ""}</div>${statusTag(n)}</div>` +
+    pathTo(id).map(p => {
+      const a = p.agent ? agentById(p.agent) : null;
+      const kids = childrenOf(p.id).length;
+      const meta = p.gen === 0 ? `<b>Seed</b><span>${periodOf(0)}</span>` :
+        `<b>${periodOf(p.gen)}</b><span>Iteration ${p.gen}</span>${ui.showAuthors && a ? `<span>${esc(a.name)}${p.agent !== "you" ? " (simulated)" : ""}</span>` : ""}${p.id !== id && kids > 1 ? `<span>splits ${kids} ways here</span>` : ""}${p.edited ? `<span>edited in review</span>` : ""}`;
+      return `<div class="passage ${p.gen === 0 ? "seed" : ""} ${p.agent === "you" ? "human" : ""}" style="--h:${hueOf(p.agent)}"><div class="meta">${meta}</div><p>${esc(p.text)}</p>${ui.showAuthors && p.why ? `<div class="why">Why this branch: ${esc(p.why)}</div>` : ""}</div>`;
+    }).join("");
+}
+function renderControls() {
+  const review = pendingReview();
+  const can = !!sample && started() && S.currentGen < S.iterations && !ui.running && !ui.busy && !review;
+  $("btn-run").disabled = !can;
+  $("btn-run").textContent = !started() ? "Run iteration 1" : S.currentGen >= S.iterations ? "All iterations done" : review ? `Review iteration ${S.currentGen} first` : `Run iteration ${S.currentGen + 1}`;
+  $("btn-run-all").disabled = !can || S.iterations - S.currentGen < 2;
+  $("btn-run-all").textContent = S.reviewEach ? "Run next (pauses for review)" : "Run all remaining";
+  $("btn-run-all").hidden = S.reviewEach;
+  $("btn-stop").hidden = !ui.running;
+  $("t-authors").checked = ui.showAuthors;
+  $("human-box").hidden = !started() || S.currentGen >= S.iterations || review;
+  const labels = labelMap(); const sel = $("h-target"); const prev = sel.value;
+  sel.innerHTML = Object.entries(labels).map(([id, l]) => `<option value="${id}">${l === "S0" ? "Seed" : l}: …${esc(nodeById(id).text.slice(-70))}</option>`).join("");
+  if ([...sel.options].some(o => o.value === prev)) sel.value = prev;
+  const st = $("run-status");
+  if (!started() && !ui.running && !st.textContent) st.textContent = "The exercise hasn't started. Finish Topic, Experts and Personas, then press Start the exercise.";
+}
+
+// ---------- 5. Survived & extinct ----------
+function renderStories() {
+  const labels = labelMap(), dl = extinctLabels();
+  const alive = S.currentGen > 0 ? liveTips() : [], dead = extinctLeaves();
+  const syn = S.evaluation?.synthesis?.storylines || {};
+  const scores = S.evaluation ? scoreTable() : {};
+  $("arch-filters").innerHTML = [["all", "All", alive.length + dead.length], ["alive", "Survived", alive.length], ["dead", "Extinct", dead.length]].map(([k, l, c]) =>
+    `<button class="chip" data-a="${k}" aria-pressed="${ui.archFilter === k}">${l} <span class="c">${c}</span></button>`).join("");
+  $("arch-filters").querySelectorAll("[data-a]").forEach(b => b.onclick = () => { ui.archFilter = b.dataset.a; renderStories(); });
+  const card = (n, isAlive) => {
+    const path = pathTo(n.id).slice(1), au = authorsOf(n.id), t = syn[n.id], s = scores[n.id];
+    const firstGen = path[0]?.gen;
+    return `<article class="arch ${isAlive ? "" : "dead"}">
+      <div class="hd"><div><span class="lab">${isAlive ? labels[n.id] : dl[n.id]}</span><span class="ttl">${esc(t?.title || (isAlive ? "Surviving storyline" : "Extinct storyline"))}</span></div>
+        <div class="toolbar">${isAlive ? `<span class="tag alive">survived to ${endYearOf(n.gen)}</span>` : `<span class="tag dead">extinct after iteration ${n.gen} (${periodOf(n.gen)})</span>`}
+        <span class="authors" title="${esc(au.map(a => agentById(a)?.name).join(", "))}">${au.map(a => `<span class="dot ${a === "you" ? "human" : ""}" style="--h:${hueOf(a)}"></span>`).join("")}</span>
+        ${s && s.n ? `<span class="tag">L ${s.l.toFixed(1)} · D ${s.d.toFixed(1)}</span>` : ""}</div></div>
+      ${t?.summary ? `<div class="muted small" style="margin-top:4px">${esc(t.summary)}</div>` : ""}
+      <p class="last">…${esc(n.text)}</p>
+      <details><summary>Read the full storyline (${path.length} paragraph${path.length === 1 ? "" : "s"}, ${au.length} author${au.length === 1 ? "" : "s"})</summary>
+        <div class="full"><p><span class="m">Seed · ${S.startYear}</span><br>${esc(S.seed)}</p>${path.map(p => `<p><span class="m">${periodOf(p.gen)} · ${esc(agentById(p.agent)?.name || "?")}</span><br>${esc(p.text)}</p>`).join("")}</div>
+        <div class="toolbar" style="margin-top:8px"><button class="btn sm" data-net="${n.id}">Show in network</button></div>
+      </details></article>`;
+  };
+  const body = $("arch-body");
+  if (!S.currentGen) { body.innerHTML = `<div class="placeholder"><h3>No storylines yet</h3><p>Run the first iteration on the Storylines tab. Survived and extinct storylines appear here as the exercise goes on.</p></div>`; }
+  else {
+    const showA = ui.archFilter !== "dead", showD = ui.archFilter !== "alive";
+    body.innerHTML = `<div class="${showA && showD ? "split" : ""}">
+      ${showA ? `<div><h3 style="margin-bottom:10px">Survived <span class="muted">(${alive.length})</span></h3><div class="arch-grid">${alive.map(n => card(n, true)).join("") || `<p class="muted">None.</p>`}</div></div>` : ""}
+      ${showD ? `<div><h3 style="margin-bottom:10px">Extinct <span class="muted">(${dead.length})</span></h3><div class="arch-grid">${dead.map(n => card(n, false)).join("") || `<p class="muted">No storyline has died out yet.</p>`}</div></div>` : ""}
+    </div>`;
+    body.querySelectorAll("[data-net]").forEach(b => b.onclick = () => { ui.selected = b.dataset.net; setTab("tree"); });
+  }
+  renderInfluence();
+}
+function renderInfluence() {
+  const el = $("influence");
+  if (!S.currentGen) { el.innerHTML = `<div style="padding:14px" class="muted">Appears after the first iteration.</div>`; return; }
+  const aliveSet = new Set(); liveTips().forEach(t => pathTo(t.id).forEach(p => aliveSet.add(p.id)));
+  const fav = S.evaluation ? selfFavour() : {};
+  const rows = S.agents.concat(S.nodes.some(n => n.agent === "you") ? [HUMAN] : []).map(a => {
+    const mine = S.nodes.filter(n => n.agent === a.id && !n.rejected);
+    const own = mine.filter(n => n.gen >= 2 && nodeById(n.parent)?.agent === a.id).length;
+    const later = mine.filter(n => n.gen >= 2).length;
+    const surv = mine.filter(n => aliveSet.has(n.id)).length;
+    const builtOn = mine.reduce((s, n) => s + childrenOf(n.id).filter(c => c.agent !== a.id).length, 0);
+    return { a, n: mine.length, own, later, surv, builtOn, fav: fav[a.id] };
+  }).sort((x, y) => y.surv - x.surv || y.builtOn - x.builtOn);
+  el.innerHTML = `<table><thead><tr><th>Persona</th><th>Contributions</th><th>Extended own branch</th><th>Still in a surviving storyline</th><th>Built on by others</th>${S.evaluation ? `<th>Self-favour in rating</th>` : ""}</tr></thead><tbody>${rows.map(r => `<tr>
+    <td><span style="display:inline-flex;gap:7px;align-items:center;--h:${hueOf(r.a.id)}"><span class="dot ${r.a.id === "you" ? "human" : ""}"></span><span><b>${esc(r.a.name)}</b><br><span class="muted small">${esc(r.a.role)}</span></span></span></td>
+    <td class="num">${r.n}</td><td class="num">${r.own}${r.later ? ` <span class="muted">of ${r.later}</span>` : ""}</td><td class="num">${r.surv} <span class="muted">of ${r.n}</span></td><td class="num">${r.builtOn}</td>
+    ${S.evaluation ? `<td class="num">${r.fav == null ? "–" : (r.fav > 0 ? "+" : "") + r.fav.toFixed(1)}</td>` : ""}</tr>`).join("")}</tbody></table>
+    ${S.evaluation ? `<div class="muted small" style="padding:8px 10px;border-top:1px solid var(--line)">Self-favour: how much higher a persona rated the desirability of storylines it co-wrote than those it didn't. Near zero means impartial.</div>` : ""}`;
+}
+
+// ---------- 6. Evaluation ----------
+function evalPrompt(group, labels) {
+  const stories = Object.entries(labels).map(([id, l]) => `[${l}]\n${storyText(id)}`).join("\n\n---\n\n");
+  return `You are simulating independent expert participants in the final evaluation round of a ParEvo scenario exercise. Each participant is a simulated perspective based on a person's public record.
+
+FOCAL QUESTION: ${S.question}
+TIME FRAME: ${S.startYear} to ${S.endYear}
+
+SURVIVING STORYLINES:
+${stories}
+
+PARTICIPANTS (judge independently, each from their own expertise and values):
+${group.map(a => `- ${a.id} | ${a.name}, ${a.role}. ${S.personas[a.id]?.brief || a.lens}`).join("\n")}
+
+For EACH participant, rate EACH storyline:
+- "l" likelihood that events unfold broadly like this, 1 (very unlikely) to 5 (very likely)
+- "d" desirability from that participant's point of view, 1 (very undesirable) to 5 (very desirable)
+Judge every storyline on its merits. Some participants co-wrote some storylines; that must not raise their ratings. Use the full range where justified; participants should disagree where their views differ.
+
+Reply with only JSON: [{"agent": "<id>", "ratings": [{"s": "S1", "l": 3, "d": 2}, ...]}, ...]`;
+}
+function synthPrompt(labels, scores) {
+  const stories = Object.entries(labels).map(([id, l]) => `[${l}] likelihood ${scores[id].l.toFixed(1)} (spread ${scores[id].ls.toFixed(1)}), desirability ${scores[id].d.toFixed(1)} (spread ${scores[id].ds.toFixed(1)})\n${storyText(id)}`).join("\n\n---\n\n");
+  const dead = extinctLeaves().map(n => `- died after iteration ${n.gen}: ${n.text.slice(0, 220)}`).join("\n");
+  const s = computeStats();
+  return `You are the facilitator analysing a ParEvo participatory scenario exercise. ${S.agents.length} simulated expert personas (${S.agents.map(a => a.role).join("; ")}) extended branching storylines over ${S.currentGen} iterations. ${s.dead} storylines went extinct; ${s.tips} survived from ${s.lineages} distinct opening lineages.
+
+FOCAL QUESTION: ${S.question}
+TIME FRAME: ${S.startYear} to ${S.endYear}
+
+SURVIVING STORYLINES with mean panel ratings (1-5):
+${stories}
+
+LAST PARAGRAPHS OF EXTINCT STORYLINES:
+${dead || "(none)"}
+
+Reply with only JSON:
+{"storylines": [{"s": "S1", "title": "evocative title, max 5 words", "summary": "one sentence"}],
+ "overview": "80-120 words on the shape of the futures: what survived, what died out and why that may matter, how likelihood and desirability relate",
+ "drivers": ["4-6 key drivers of change that separate the storylines"],
+ "divergences": ["3-4 branching points: a year and what diverged"],
+ "signposts": ["4-6 early warning indicators to watch now"]}`;
+}
+async function runEvaluation() {
+  if (ui.busy || ui.running || !sample || S.currentGen < 1 || pendingReview()) return;
+  ui.stop = false; busy("eval");
+  const st = $("eval-status");
+  const labels = labelMap();
+  const idOf = Object.fromEntries(Object.entries(labels).map(([id, l]) => [l, id]));
+  const ratings = {}; let done = 0, fatal = null;
+  const progress = () => { st.className = "status"; st.innerHTML = `<span class="spinner"></span> ${done} of ${S.agents.length} personas have rated the storylines…`; };
+  progress();
+  try {
+    await pool(chunk(S.agents, 5).map(group => async () => {
+      if (ui.stop || fatal) return;
+      try {
+        const out = await ask(evalPrompt(group, labels));
+        (Array.isArray(out) ? out : []).forEach(r => {
+          const a = group.find(g => g.id === String(r.agent || "").trim());
+          if (!a || !Array.isArray(r.ratings)) return;
+          ratings[a.id] = {};
+          r.ratings.forEach(x => { const nid = idOf[String(x.s || "").trim().toUpperCase()]; const l = Number(x.l), d = Number(x.d); if (nid && l >= 1 && l <= 5 && d >= 1 && d <= 5) ratings[a.id][nid] = { l, d }; });
+          done++;
+        });
+      } catch (e) { if (e && FATAL.has(e.code)) { fatal = e; stopAll(); } }
+      finally { progress(); }
+    }), 2);
+    if (fatal || ui.stop || !Object.keys(ratings).length) { st.className = "status err"; st.textContent = fatal ? errCopy(fatal) : ui.stop ? "Evaluation stopped." : "No ratings came back. Try again."; return; }
+    S.evaluation = { gen: S.currentGen, ratings, synthesis: null };
+    save(); renderEval();
+    st.innerHTML = `<span class="spinner"></span> Writing the synthesis…`;
+    try {
+      const out = await ask(synthPrompt(labels, scoreTable()), S.tier === "quick" ? "default" : S.tier);
+      const storylines = {};
+      (out.storylines || []).forEach(x => { const nid = idOf[String(x.s || "").trim().toUpperCase()]; if (nid) storylines[nid] = { title: String(x.title || ""), summary: String(x.summary || "") }; });
+      S.evaluation.synthesis = { storylines, overview: String(out.overview || ""), drivers: (out.drivers || []).map(String), divergences: (out.divergences || []).map(String), signposts: (out.signposts || []).map(String) };
+      st.className = "status"; st.textContent = `Evaluation complete: ${done} of ${S.agents.length} personas rated ${Object.keys(labels).length} storylines.`;
+    } catch (e) { st.className = "status err"; st.textContent = "Ratings are in, but the synthesis failed. " + errCopy(e); }
+    save();
+  } finally { busy(null); }
+}
+$("btn-eval").onclick = runEvaluation;
+$("t-exclude-own").addEventListener("change", e => { S.excludeOwn = e.target.checked; save(); renderEval(); });
+function scoreTable() {
+  const out = {}; const r = S.evaluation?.ratings || {};
+  liveTips().forEach(t => {
+    const au = new Set(authorsOf(t.id)); const ls = [], ds = [];
+    Object.entries(r).forEach(([aid, byNode]) => { const x = byNode[t.id]; if (!x) return; if (S.excludeOwn && au.has(aid)) return; ls.push(x.l); ds.push(x.d); });
+    out[t.id] = { l: mean(ls), d: mean(ds), ls: sd(ls), ds: sd(ds), n: ls.length };
+  });
+  return out;
+}
+function selfFavour() {
+  const out = {}; const r = S.evaluation?.ratings || {};
+  Object.entries(r).forEach(([aid, byNode]) => {
+    const own = [], other = [];
+    liveTips().forEach(t => { const x = byNode[t.id]; if (!x) return; (authorsOf(t.id).includes(aid) ? own : other).push(x.d); });
+    out[aid] = own.length && other.length ? mean(own) - mean(other) : null;
+  });
+  return out;
+}
+function renderEval() {
+  const body = $("eval-body");
+  $("btn-eval").disabled = !sample || !!ui.busy || ui.running || S.currentGen < 1 || pendingReview();
+  $("btn-eval").textContent = S.evaluation ? "Re-run evaluation" : "Run evaluation";
+  $("btn-eval-stop").hidden = ui.busy !== "eval";
+  $("t-exclude-own").checked = !!S.excludeOwn;
+  if (!S.evaluation) {
+    body.innerHTML = `<div class="placeholder"><h3>No evaluation yet</h3><p>${!started() ? "Run the exercise first." : pendingReview() ? `Approve iteration ${S.currentGen} on the Storylines tab first.` : S.currentGen < S.iterations ? `The exercise is at iteration ${S.currentGen} of ${S.iterations}. You can evaluate the current storylines now, but it's usually done after the final iteration.` : "All iterations are complete. Run the evaluation to see how the panel judges each surviving future."}</p></div>`;
+    return;
+  }
+  const labels = labelMap(), scores = scoreTable(), syn = S.evaluation.synthesis;
+  const stale = S.evaluation.gen !== S.currentGen;
+  const ids = Object.keys(labels).filter(id => scores[id] && scores[id].n);
+  const W = 400, H = 400, m = { l: 46, r: 16, t: 16, b: 44 };
+  const px = v => m.l + (v - 1) / 4 * (W - m.l - m.r), py = v => H - m.b - (v - 1) / 4 * (H - m.t - m.b);
+  let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Likelihood versus desirability">`;
+  for (let v = 1; v <= 5; v++) {
+    svg += `<line class="grid" x1="${px(v)}" y1="${py(1)}" x2="${px(v)}" y2="${py(5)}"/><line class="grid" x1="${px(1)}" y1="${py(v)}" x2="${px(5)}" y2="${py(v)}"/>`;
+    svg += `<text x="${px(v)}" y="${py(1) + 16}" text-anchor="middle">${v}</text><text x="${px(1) - 10}" y="${py(v) + 4}" text-anchor="end">${v}</text>`;
+  }
+  svg += `<rect class="quadfill" x="${px(3)}" y="${py(5)}" width="${px(5) - px(3)}" height="${py(3) - py(5)}"/>`;
+  svg += `<line class="axis" x1="${px(3)}" y1="${py(1)}" x2="${px(3)}" y2="${py(5)}" stroke-dasharray="4 3"/><line class="axis" x1="${px(1)}" y1="${py(3)}" x2="${px(5)}" y2="${py(3)}" stroke-dasharray="4 3"/>`;
+  svg += `<text class="quad" x="${px(5) - 4}" y="${py(5) + 14}" text-anchor="end">Likely and desirable</text><text class="quad" x="${px(1) + 4}" y="${py(5) + 14}">Unlikely, desirable</text><text class="quad" x="${px(5) - 4}" y="${py(1) - 6}" text-anchor="end">Likely, undesirable</text><text class="quad" x="${px(1) + 4}" y="${py(1) - 6}">Unlikely, undesirable</text>`;
+  svg += `<text x="${(px(1) + px(5)) / 2}" y="${H - 8}" text-anchor="middle">LIKELIHOOD →</text><text x="12" y="${(py(1) + py(5)) / 2}" text-anchor="middle" transform="rotate(-90 12 ${(py(1) + py(5)) / 2})">DESIRABILITY →</text>`;
+  ids.forEach(id => { const s = scores[id];
+    svg += `<line class="whisker" x1="${px(clamp(s.l - s.ls, 1, 5))}" y1="${py(s.d)}" x2="${px(clamp(s.l + s.ls, 1, 5))}" y2="${py(s.d)}"/><line class="whisker" x1="${px(s.l)}" y1="${py(clamp(s.d - s.ds, 1, 5))}" x2="${px(s.l)}" y2="${py(clamp(s.d + s.ds, 1, 5))}"/>`; });
+  ids.forEach(id => { const s = scores[id]; const x = px(s.l), y = py(s.d);
+    const crowded = ids.some(o => o !== id && Math.abs(py(scores[o].d) - y) < 12 && px(scores[o].l) - x > 0 && px(scores[o].l) - x < 34);
+    svg += `<circle class="pt" cx="${x}" cy="${y}" r="7" data-id="${id}" tabindex="0" role="button"><title>${esc(labels[id] + (syn?.storylines?.[id]?.title ? ": " + syn.storylines[id].title : ""))}</title></circle><text class="pt-label" x="${crowded ? x - 10 : x + 10}" y="${y + 4}" text-anchor="${crowded ? "end" : "start"}">${labels[id]}</text>`; });
+  svg += `</svg>`;
+  const sorted = ids.slice().sort((a, b) => (scores[b].l + scores[b].d) - (scores[a].l + scores[a].d));
+  const rows = sorted.map(id => { const s = scores[id]; const t = syn?.storylines?.[id];
+    return `<tr class="click" data-id="${id}"><td class="num">${labels[id]}</td><td><b>${esc(t?.title || "Untitled")}</b>${t?.summary ? `<div class="muted" style="font-size:12.5px">${esc(t.summary)}</div>` : ""}</td>
+      <td class="num">${s.l.toFixed(1)} <span class="muted">±${s.ls.toFixed(1)}</span><span class="bar" style="width:${(s.l - 1) / 4 * 40}px"></span></td>
+      <td class="num">${s.d.toFixed(1)} <span class="muted">±${s.ds.toFixed(1)}</span><span class="bar" style="width:${(s.d - 1) / 4 * 40}px"></span></td>
+      <td class="num">${s.n}</td></tr>`; }).join("");
+  const list = (h, arr) => arr && arr.length ? `<div><div class="eyebrow">${h}</div><ul>${arr.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+  body.innerHTML = `${stale ? `<div class="stale">These ratings are from iteration ${S.evaluation.gen}. The storylines have changed since, so re-run the evaluation.</div>` : ""}
+    <div class="eval-grid">
+      <div class="scatter">${svg}<div class="muted" style="font-size:12px;padding:4px 6px">Points are panel means${S.excludeOwn ? ", excluding each persona's ratings of storylines it co-wrote" : ""}. Whiskers show disagreement (one standard deviation).</div></div>
+      <div class="table-wrap"><table><thead><tr><th>#</th><th>Storyline</th><th>Likelihood</th><th>Desirability</th><th>Raters</th></tr></thead><tbody>${rows}</tbody></table></div>
+    </div>
+    ${syn ? `<div class="synth">${syn.overview ? `<div class="overview">${esc(syn.overview)}</div>` : ""}${list("Key drivers", syn.drivers)}${list("Branching points", syn.divergences)}${list("Signposts to watch", syn.signposts)}</div>` : ""}`;
+  const go = id => { ui.selected = id; setTab("tree"); };
+  body.querySelectorAll("tr[data-id], circle.pt").forEach(el => { el.addEventListener("click", () => go(el.dataset.id)); el.addEventListener("keydown", e => { if (e.key === "Enter") go(el.dataset.id); }); });
+}
+
+// ---------- Export / import ----------
+function toMarkdown() {
+  const labels = labelMap(), dl = extinctLabels(); const scores = S.evaluation ? scoreTable() : {}; const syn = S.evaluation?.synthesis;
+  let md = `# ${S.title}\n\n**Focal question:** ${S.question}\n\n**Time frame:** ${S.startYear}–${S.endYear}, ${S.currentGen} of ${S.iterations} iterations\n\n`;
+  md += `## Panel (${S.agents.length} simulated personas)\n\n*Personas simulate perspectives based on each person's public record. They are not the people's own words.*\n\n`;
+  S.agents.forEach(a => { const p = S.personas[a.id]; md += `- **${a.name}**, ${a.role}${p?.brief ? `: ${p.brief}` : ""}\n`; });
+  md += `\n## Seed\n\n${S.seed}\n\n`;
+  if (syn?.overview) md += `## Synthesis\n\n${syn.overview}\n\n` + [["drivers", "Key drivers"], ["divergences", "Branching points"], ["signposts", "Signposts to watch"]].map(([k, h]) => syn[k]?.length ? `### ${h}\n\n${syn[k].map(x => "- " + x).join("\n")}\n\n` : "").join("");
+  const story = id => pathTo(id).slice(1).map(p => `**${periodOf(p.gen)}** (${agentById(p.agent)?.name || "?"}): ${p.text}\n\n`).join("");
+  md += `## Surviving storylines\n\n`;
+  Object.entries(labels).forEach(([id, l]) => { const t = syn?.storylines?.[id]; const s = scores[id];
+    md += `### ${l}${t?.title ? ": " + t.title : ""}\n\n${s && s.n ? `*Likelihood ${s.l.toFixed(1)} ±${s.ls.toFixed(1)} · Desirability ${s.d.toFixed(1)} ±${s.ds.toFixed(1)}*\n\n` : ""}${story(id)}`; });
+  const dead = extinctLeaves();
+  if (dead.length) { md += `## Extinct storylines\n\n`; dead.forEach(n => { md += `### ${dl[n.id]} (extinct after iteration ${n.gen})\n\n${story(n.id)}`; }); }
+  return md;
+}
+function slug() { return (S.title || "exercise").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 50) || "exercise"; }
+async function offer(filename, data) {
+  if (downloads) { try { await downloads.save({ filename, data }); toast("Saved " + filename); return; } catch (e) { if (e && e.code === "declined") return; } }
+  try { await navigator.clipboard.writeText(data); toast("Downloads aren't available here, so the file was copied to your clipboard."); }
+  catch (e) { toast("Couldn't save or copy the file in this view."); }
+}
+$("btn-export-md").onclick = () => offer(slug() + ".md", toMarkdown());
+$("btn-export-json").onclick = () => offer(slug() + ".json", JSON.stringify(S, null, 2));
+$("file-import").addEventListener("change", e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  f.text().then(txt => {
+    try {
+      const v = JSON.parse(txt);
+      if (!v || !Array.isArray(v.nodes) || !Array.isArray(v.agents)) throw 0;
+      const ex = migrate(v); ex.isExample = false; ex.id = "ex-" + Date.now().toString(36);
+      switchTo(ex); save(); toast("Imported " + (ex.title || "exercise"));
+    } catch (err) { toast("That file isn't a Branching Futures export."); }
+    e.target.value = "";
+  });
+});
+
+// ---------- Render ----------
+function renderNow() {
+  const tips = S.currentGen > 0 ? liveTips().length : 0, dead = extinctLeaves().length;
+  const n = started() ? S.agents.length : selectedExperts().length || S.targetCount;
+  const stage = S.isExample ? "Worked example" : !started() ? "Setting up" : S.currentGen >= S.iterations && !pendingReview() ? "Complete" : pendingReview() ? `Awaiting your review` : "In progress";
+  $("now").innerHTML = `<div class="k">${esc(stage)} · ${S.startYear}–${S.endYear}</div><div class="t">${esc(S.title || "Untitled exercise")}</div>${S.question ? `<div class="q">${esc(S.question)}</div>` : ""}
+    <div class="figs"><div><b>${n}</b><span>personas</span></div><div><b>${S.currentGen}/${S.iterations}</b><span>iterations</span></div><div><b>${tips}</b><span>surviving</span></div><div><b>${dead}</b><span>extinct</span></div></div>
+    <div class="prog">${Array.from({ length: S.iterations }, (_, i) => `<i class="${i < S.currentGen ? "on" : ""}"></i>`).join("")}</div>`;
+}
+function renderAll() {
+  renderTabs(); renderBanner(); renderNow();
+  if (ui.tab === "topic") renderTopic();
+  if (ui.tab === "experts") renderExperts();
+  if (ui.tab === "personas") renderPersonas();
+  if (ui.tab === "tree") { renderControls(); renderReview(); renderStats(); renderLegend(); renderTree(); renderReader(); }
+  if (ui.tab === "stories") renderStories();
+  if (ui.tab === "eval") renderEval();
+  wireRestart();
+}
+
+// ---------- Masthead: storylines growing, splitting and dying out ----------
+(function mast() {
+  const cv = $("mast-canvas"); const ctx = cv.getContext("2d"); if (!ctx) return;
+  const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W = 0, H = 0, dpr = 1, growers = [], band = "#0b2326";
+  const hues = [38, 172, 190, 28, 160, 205];
+  const size = () => {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const r = cv.getBoundingClientRect(); W = r.width; H = r.height;
+    cv.width = Math.max(1, Math.round(W * dpr)); cv.height = Math.max(1, Math.round(H * dpr));
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    band = getComputedStyle(document.documentElement).getPropertyValue("--band").trim() || band;
+    ctx.fillStyle = band; ctx.fillRect(0, 0, W, H);
+  };
+  const seed = () => { growers.push({ x: -4, y: H * (0.25 + Math.random() * 0.5), a: (Math.random() - 0.5) * 0.3, h: hues[Math.floor(Math.random() * hues.length)], w: 1.6 }); };
+  const step = () => {
+    ctx.fillStyle = band; ctx.globalAlpha = 0.018; ctx.fillRect(0, 0, W, H); ctx.globalAlpha = 1;
+    const next = [];
+    for (const g of growers) {
+      const nx = g.x + 1.6 * Math.cos(g.a), ny = g.y + 1.6 * Math.sin(g.a);
+      ctx.strokeStyle = `hsla(${g.h}, 70%, 64%, 0.55)`; ctx.lineWidth = g.w;
+      ctx.beginPath(); ctx.moveTo(g.x, g.y); ctx.lineTo(nx, ny); ctx.stroke();
+      g.x = nx; g.y = ny; g.a += (Math.random() - 0.5) * 0.08; g.a *= 0.985;
+      if (g.y < 10 || g.y > H - 10) g.a = -g.a * 0.6;
+      if (g.x > W + 4) continue;
+      if (Math.random() < 0.0035 && growers.length > 2) { ctx.fillStyle = `hsla(${g.h}, 60%, 70%, 0.6)`; ctx.beginPath(); ctx.arc(g.x, g.y, 2, 0, 7); ctx.fill(); continue; }
+      next.push(g);
+      if (Math.random() < 0.011 && growers.length < 46) {
+        const h = Math.random() < 0.7 ? g.h : hues[Math.floor(Math.random() * hues.length)];
+        next.push({ x: g.x, y: g.y, a: g.a + (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.4), h, w: Math.max(0.8, g.w * 0.85) });
+        ctx.fillStyle = `hsla(${g.h}, 80%, 72%, 0.9)`; ctx.beginPath(); ctx.arc(g.x, g.y, 2.2, 0, 7); ctx.fill();
+      }
+    }
+    growers = next;
+    if (growers.length < 3) seed();
+  };
+  size(); for (let i = 0; i < 3; i++) seed();
+  for (let i = 0; i < (reduce ? 900 : 380); i++) step();
+  window.addEventListener("resize", () => { size(); });
+  if (reduce) return;
+  const loop = () => { if (!document.hidden) step(); requestAnimationFrame(loop); };
+  requestAnimationFrame(loop);
+})();
+
+renderAll();
+(async () => {
+  if (!window.claude || typeof window.claude.use !== "function") { samplingChecked = true; renderAll(); return; }
+  const [s, d, db, user] = await Promise.all(["sample", "downloads", "db", "user"].map(n => window.claude.use(n).catch(() => null)));
+  sample = s; downloads = d; samplingChecked = true;
+  if (db && user) {
+    try {
+      const id = await user.id();
+      if (id) { store.db = db; store.uid = id; setSaveState("cloud", S.isExample ? "Example (not saved)" : "Saved to your account"); }
+    } catch (e) {}
+  }
+  renderAll();
+})();
+})();
+</script>
+
+</body>
+</html>
